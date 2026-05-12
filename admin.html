@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة إدارة حفل التخرج</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #c9a227;
+      --gold-light: #f0d060;
+      --purple: #7c3aed;
+      --navy: #05010f;
+      --bg: #0f0a1e;
+      --surface: #1a1030;
+      --surface2: #221540;
+      --border: rgba(201,162,39,0.2);
+      --text: #e8e0f0;
+      --muted: rgba(232,224,240,0.5);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ═══ LOGIN SCREEN ═══ */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 40% 30%, #1a0533 0%, #05010f 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .login-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 52px;
+      width: 420px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+    }
+
+    .login-icon { font-size: 52px; margin-bottom: 16px; }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 6px;
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .login-box input[type="password"]:focus {
+      border-color: var(--gold);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--purple), #a855f7);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-login:active { transform: scale(0.98); }
+
+    .login-error {
+      color: #f87171;
+      font-size: 14px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ═══ MAIN ADMIN ═══ */
+    #admin-main { display: none; }
+
+    .top-bar {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .top-bar-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .top-bar-title .icon { font-size: 28px; }
+
+    .top-bar-title h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .top-bar-title p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .btn-logout {
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 10px;
+      padding: 8px 18px;
+      color: #f87171;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-logout:hover { background: rgba(248,113,113,0.2); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .tab-btn {
+      padding: 16px 28px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    .tab-btn:hover { color: #fff; }
+
+    .tab-count {
+      background: rgba(201,162,39,0.15);
+      border-radius: 50px;
+      padding: 2px 10px;
+      font-size: 12px;
+      color: var(--gold);
+    }
+
+    /* Content */
+    .content { padding: 40px; max-width: 900px; margin: 0 auto; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Section */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Form fields */
+    .field-group { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.25s;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--gold);
+    }
+
+    /* Logo upload */
+    .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .logo-upload-box {
+      border: 2px dashed rgba(201,162,39,0.25);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-upload-box:hover {
+      border-color: rgba(201,162,39,0.5);
+      background: rgba(201,162,39,0.04);
+    }
+
+    .logo-upload-box input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: none;
+      background: none;
+    }
+
+    .logo-preview {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: contain;
+      margin: 0 auto 12px;
+      display: block;
+      border: 2px solid var(--border);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .logo-placeholder {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(201,162,39,0.08);
+      border: 2px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 12px;
+    }
+
+    .logo-upload-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .logo-upload-hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Save button */
+    .btn-save {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, var(--gold), #f0d060);
+      border: none;
+      border-radius: 12px;
+      color: #1a0533;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
+    .btn-save:active { transform: scale(0.98); }
+
+    .save-confirm {
+      display: none;
+      color: #4ade80;
+      font-size: 14px;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    /* Messages list */
+    .msg-count-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .msg-count-bar h3 { font-size: 16px; font-weight: 600; color: #fff; }
+
+    .btn-clear-all {
+      padding: 8px 16px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 10px;
+      color: #f87171;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-clear-all:hover { background: rgba(248,113,113,0.2); }
+
+    .msg-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .msg-empty .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .msg-empty p { font-size: 16px; }
+
+    .msg-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+
+    .msg-card:hover { border-color: rgba(201,162,39,0.2); }
+
+    .msg-card.inactive { opacity: 0.5; }
+
+    .msg-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .msg-body { flex: 1; min-width: 0; }
+
+    .msg-names {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .msg-student {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .msg-arrow { color: var(--muted); font-size: 14px; }
+
+    .msg-parent {
+      font-size: 14px;
+      color: rgba(201,162,39,0.8);
+    }
+
+    .msg-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .msg-time { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+    .msg-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-toggle {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-toggle.active-state {
+      background: rgba(74,222,128,0.08);
+      border-color: rgba(74,222,128,0.3);
+      color: #4ade80;
+    }
+
+    .btn-toggle.inactive-state {
+      background: rgba(251,191,36,0.08);
+      border-color: rgba(251,191,36,0.3);
+      color: #fbbf24;
+    }
+
+    .btn-delete {
+      padding: 7px 14px;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 8px;
+      color: #f87171;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-delete:hover { background: rgba(248,113,113,0.18); }
+
+    /* Preview link */
+    .preview-bar {
+      margin-top: 20px;
+      padding: 16px 20px;
+      background: rgba(124,58,237,0.08);
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .preview-bar p { font-size: 14px; color: var(--muted); }
+
+    .btn-preview {
+      padding: 10px 24px;
+      background: rgba(124,58,237,0.2);
+      border: 1px solid rgba(124,58,237,0.4);
+      border-radius: 10px;
+      color: #a78bfa;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+
+    .btn-preview:hover { background: rgba(124,58,237,0.35); }
+
+    /* Password change */
+    .pwd-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: end; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .content { padding: 20px; }
+      .logo-grid { grid-template-columns: 1fr; }
+      .pwd-grid { grid-template-columns: 1fr; }
+      .top-bar { padding: 14px 20px; }
+      .tabs { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h1 class="login-title">لوحة إدارة التخرج</h1>
+    <p class="login-sub">أدخل كلمة المرور للدخول</p>
+    <input type="password" id="pwd-input" placeholder="••••••" maxlength="20"
+           onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="btn-login" onclick="doLogin()">دخول</button>
+    <div class="login-error" id="login-error">كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+<!-- ADMIN MAIN -->
+<div id="admin-main">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-bar-title">
+      <span class="icon">🎓</span>
+      <div>
+        <h1>لوحة إدارة حفل التخرج</h1>
+        <p>تحكم كامل بالإعدادات والرسائل</p>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">تسجيل الخروج</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('settings', this)">
+      ⚙️ إعدادات الحفل
+    </button>
+    <button class="tab-btn" onclick="switchTab('messages', this)">
+      💌 رسائل أولياء الأمور
+      <span class="tab-count" id="tab-msg-count">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('password', this)">
+      🔑 كلمة المرور
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ══ SETTINGS TAB ══ -->
+    <div class="tab-panel active" id="tab-settings">
+
+      <div class="section">
+        <div class="section-title">🏫 معلومات المدرسة</div>
+        <div class="section-sub">هذه المعلومات ستظهر في شاشة العرض الرئيسية</div>
+
+        <div class="field-group">
+          <label>اسم المدرسة</label>
+          <input type="text" id="f-school-name" placeholder="مثال: الثانوية الثالثة عشرة بعرعر">
+        </div>
+
+        <div class="field-group">
+          <label>الدفعة / السنة</label>
+          <input type="text" id="f-batch" placeholder="مثال: دفعة الفخر والعطاء · ١٤٤٦ هـ">
+        </div>
+
+        <div class="field-group">
+          <label>عبارة شريط الأخبار (تظهر في الأعلى)</label>
+          <input type="text" id="f-ticker" placeholder="مثال: مبارك للخريجات العزيزات">
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">🖼️ الشعارات</div>
+        <div class="section-sub">ارفع صور الشعارات — يُفضّل PNG بخلفية شفافة</div>
+
+        <div class="logo-grid">
+          <!-- Ministry logo -->
+          <div class="logo-upload-box" onclick="document.getElementById('f-ministry-file').click()">
+            <input type="file" id="f-ministry-file" accept="image/*"
+                   onchange="handleLogoUpload(this, 'ministry')">
+            <div id="ministry-preview-wrap">
+              <div class="logo-placeholder">🏛</div>
+            </div>
+            <div class="logo-upload-label">شعار وزارة التعليم</div>
+            <div class="logo-upload-hint">اضغط لاختيار الصورة</div>
+          </div>
+
+          <!-- School logo -->
+          <div class="logo-upload-box" onclick="document.getElementById('f-school-file').click()">
+            <input type="file" id="f-school-file" accept="image/*"
+                   onchange="handleLogoUpload(this, 'school')">
+            <div id="school-preview-wrap">
+              <div class="logo-placeholder">🎓</div>
+            </div>
+            <div class="logo-upload-label">شعار المدرسة</div>
+            <div class="logo-upload-hint">اضغط لاختيار الصورة</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-save" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+      <div class="save-confirm" id="settings-confirm">✅ تم الحفظ بنجاح! ستظهر التغييرات في شاشة العرض فوراً.</div>
+
+      <div class="preview-bar" style="margin-top:28px">
+        <p>عرض شاشة البلازما الرئيسية</p>
+        <a href="index.html" target="_blank" class="btn-preview">فتح شاشة العرض ←</a>
+      </div>
+
+    </div><!-- /settings tab -->
+
+    <!-- ══ MESSAGES TAB ══ -->
+    <div class="tab-panel" id="tab-messages">
+
+      <div class="section">
+        <div class="msg-count-bar">
+          <h3>جميع الرسائل المستلمة (<span id="msg-total">0</span>)</h3>
+          <button class="btn-clear-all" onclick="clearAllMessages()">🗑 حذف الكل</button>
+        </div>
+
+        <div id="messages-list">
+          <div class="msg-empty">
+            <div class="empty-icon">💌</div>
+            <p>لا توجد رسائل بعد</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /messages tab -->
+
+    <!-- ══ PASSWORD TAB ══ -->
+    <div class="tab-panel" id="tab-password">
+
+      <div class="section">
+        <div class="section-title">🔑 تغيير كلمة المرور</div>
+        <div class="section-sub">كلمة المرور الافتراضية هي: 1446</div>
+
+        <div class="pwd-grid">
+          <div class="field-group" style="margin-bottom:0">
+            <label>كلمة المرور الحالية</label>
+            <input type="password" id="old-pwd" placeholder="••••">
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <label>كلمة المرور الجديدة</label>
+            <input type="password" id="new-pwd" placeholder="••••">
+          </div>
+          <div>
+            <button class="btn-save" onclick="changePwd()" style="width:100%; padding:13px;">تغيير</button>
+          </div>
+        </div>
+        <div class="save-confirm" id="pwd-confirm">✅ تم تغيير كلمة المرور بنجاح!</div>
+        <div class="login-error" id="pwd-error" style="display:none; margin-top:12px;">كلمة المرور الحالية غير صحيحة</div>
+      </div>
+
+    </div><!-- /password tab -->
+
+  </div><!-- /content -->
+</div><!-- /admin-main -->
+
+<script>
+/* ═══════════════════════════════════════
+   AUTH
+═══════════════════════════════════════ */
+const DEFAULT_PWD = '1446';
+
+function getPassword() {
+  return localStorage.getItem('grad_admin_pwd') || DEFAULT_PWD;
+}
+
+function doLogin() {
+  const val = document.getElementById('pwd-input').value;
+  if (val === getPassword()) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-main').style.display = 'block';
+    loadAll();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+  }
+}
+
+function doLogout() {
+  document.getElementById('admin-main').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+function changePwd() {
+  const old = document.getElementById('old-pwd').value;
+  const nw  = document.getElementById('new-pwd').value;
+  if (old !== getPassword()) {
+    document.getElementById('pwd-error').style.display = 'block';
+    document.getElementById('pwd-confirm').style.display = 'none';
+    return;
+  }
+  if (!nw || nw.length < 3) { alert('كلمة المرور قصيرة جداً'); return; }
+  localStorage.setItem('grad_admin_pwd', nw);
+  document.getElementById('pwd-error').style.display = 'none';
+  document.getElementById('pwd-confirm').style.display = 'block';
+  document.getElementById('old-pwd').value = '';
+  document.getElementById('new-pwd').value = '';
+}
+
+/* ═══════════════════════════════════════
+   TABS
+═══════════════════════════════════════ */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'messages') renderMessages();
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════ */
+const logoData = { ministry: null, school: null };
+
+function loadAll() {
+  const s = JSON.parse(localStorage.getItem('grad_settings') || '{}');
+  document.getElementById('f-school-name').value = s.schoolName || '';
+  document.getElementById('f-batch').value        = s.batch      || '';
+  document.getElementById('f-ticker').value       = s.ticker     || '';
+
+  if (s.ministryLogo) showLogoPreview('ministry', s.ministryLogo);
+  if (s.schoolLogo)   showLogoPreview('school',   s.schoolLogo);
+
+  logoData.ministry = s.ministryLogo || null;
+  logoData.school   = s.schoolLogo   || null;
+
+  renderMessages();
+}
+
+function handleLogoUpload(input, type) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    logoData[type] = e.target.result;
+    showLogoPreview(type, e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showLogoPreview(type, src) {
+  const wrap = document.getElementById(type + '-preview-wrap');
+  wrap.innerHTML = `<img class="logo-preview" src="${src}" alt="${type} logo">`;
+}
+
+function saveSettings() {
+  const s = {
+    schoolName:   document.getElementById('f-school-name').value.trim(),
+    batch:        document.getElementById('f-batch').value.trim(),
+    ticker:       document.getElementById('f-ticker').value.trim(),
+    ministryLogo: logoData.ministry,
+    schoolLogo:   logoData.school,
+    savedAt:      Date.now()
+  };
+  localStorage.setItem('grad_settings', JSON.stringify(s));
+  const c = document.getElementById('settings-confirm');
+  c.style.display = 'block';
+  setTimeout(() => c.style.display = 'none', 4000);
+}
+
+/* ═══════════════════════════════════════
+   MESSAGES
+═══════════════════════════════════════ */
+function getMessages() {
+  return JSON.parse(localStorage.getItem('grad_messages') || '[]');
+}
+
+function saveMessages(msgs) {
+  localStorage.setItem('grad_messages', JSON.stringify(msgs));
+}
+
+function renderMessages() {
+  const msgs = getMessages();
+  document.getElementById('msg-total').textContent   = msgs.length;
+  document.getElementById('tab-msg-count').textContent = msgs.length;
+
+  const list = document.getElementById('messages-list');
+
+  if (msgs.length === 0) {
+    list.innerHTML = `
+      <div class="msg-empty">
+        <div class="empty-icon">💌</div>
+        <p>لا توجد رسائل بعد — ستظهر هنا فور إرسالها</p>
+      </div>`;
+    return;
+  }
+
+  const colors = ['#7c3aed','#0e7490','#be185d','#b45309','#065f46','#4338ca'];
+
+  list.innerHTML = msgs.map((m, i) => {
+    const color = colors[i % colors.length];
+    const initial = m.studentName ? m.studentName[0] : '؟';
+    const time = new Date(m.createdAt).toLocaleString('ar-SA');
+    const isActive = m.active !== false;
+    return `
+      <div class="msg-card ${isActive ? '' : 'inactive'}" id="mc${m.id}">
+        <div class="msg-avatar" style="background:linear-gradient(135deg,${color}cc,${color})">${initial}</div>
+        <div class="msg-body">
+          <div class="msg-names">
+            <span class="msg-student">${m.studentName}</span>
+            <span class="msg-arrow">←</span>
+            <span class="msg-parent">${m.parentName}</span>
+          </div>
+          <div class="msg-text">${m.message}</div>
+          <div class="msg-time">${time}</div>
+        </div>
+        <div class="msg-actions">
+          <button class="btn-toggle ${isActive ? 'active-state' : 'inactive-state'}"
+                  onclick="toggleMsg('${m.id}')">
+            ${isActive ? '✅ ظاهرة' : '⏸ مخفية'}
+          </button>
+          <button class="btn-delete" onclick="deleteMsg('${m.id}')">🗑 حذف</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleMsg(id) {
+  const msgs = getMessages();
+  const m = msgs.find(x => x.id === id);
+  if (m) { m.active = !m.active; saveMessages(msgs); renderMessages(); }
+}
+
+function deleteMsg(id) {
+  if (!confirm('حذف هذه الرسالة نهائياً؟')) return;
+  saveMessages(getMessages().filter(x => x.id !== id));
+  renderMessages();
+}
+
+function clearAllMessages() {
+  if (!confirm('حذف جميع الرسائل نهائياً؟')) return;
+  localStorage.removeItem('grad_messages');
+  renderMessages();
+}
+
+// Auto-refresh messages every 10s
+setInterval(() => {
+  if (document.getElementById('tab-messages').classList.contains('active')) {
+    renderMessages();
+  }
+}, 10000);
+</script>
+</body>
+</html>

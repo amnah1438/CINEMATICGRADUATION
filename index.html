@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, initial-scale=1.0">
+  <title>حفل تخرج الطالبات ١٤٤٦هـ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --gold: #c9a227;
+      --gold-light: #f0d060;
+      --purple: #7c3aed;
+      --purple-light: #a855f7;
+      --navy: #05010f;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #05010f;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    /* ══ BACKGROUNDS ══ */
+    .bg-base {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0533 0%, #05010f 60%),
+                  radial-gradient(ellipse 80% 50% at 80% 100%, #0d0830 0%, transparent 70%);
+      z-index: 0;
+    }
+
+    .aurora { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+    .a1,.a2,.a3,.a4 { position:absolute; border-radius:50%; filter:blur(70px); }
+    .a1 { width:900px;height:500px; background:radial-gradient(ellipse,rgba(124,58,237,.18) 0%,transparent 70%); top:-150px;left:-200px; animation:au1 14s ease-in-out infinite alternate; }
+    .a2 { width:700px;height:400px; background:radial-gradient(ellipse,rgba(168,85,247,.12) 0%,transparent 70%); top:400px;right:-150px; animation:au2 18s ease-in-out infinite alternate; }
+    .a3 { width:600px;height:350px; background:radial-gradient(ellipse,rgba(201,162,39,.10) 0%,transparent 70%); bottom:500px;left:-100px; animation:au1 22s ease-in-out infinite alternate-reverse; }
+    .a4 { width:500px;height:300px; background:radial-gradient(ellipse,rgba(244,114,182,.09) 0%,transparent 70%); bottom:100px;right:-80px; animation:au2 16s ease-in-out infinite alternate; }
+
+    @keyframes au1 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(80px,60px) scale(1.3)} }
+    @keyframes au2 { 0%{transform:translate(0,0) scale(1.1)} 100%{transform:translate(-60px,80px) scale(.9)} }
+
+    #stars-canvas, #confetti-canvas { position:fixed; inset:0; pointer-events:none; }
+    #stars-canvas   { z-index:2; }
+    #confetti-canvas { z-index:100; }
+
+    .particle { position:fixed; border-radius:50%; pointer-events:none; z-index:3; animation:pfloat linear infinite; opacity:0; }
+    @keyframes pfloat {
+      0%  { transform:translateY(1960px) scale(0); opacity:0; }
+      5%  { opacity:1; }
+      95% { opacity:.5; }
+      100%{ transform:translateY(-40px) scale(1.5); opacity:0; }
+    }
+
+    .rays-wrap { position:fixed; top:0; left:50%; transform:translateX(-50%); width:1080px; height:700px; overflow:hidden; z-index:3; pointer-events:none; }
+    .ray { position:absolute; bottom:0; left:50%; width:1px; height:700px; background:linear-gradient(to top,transparent,rgba(201,162,39,.07),transparent); transform-origin:bottom center; animation:rayPulse 8s ease-in-out infinite; }
+    .ray:nth-child(1){transform:rotate(-50deg);animation-delay:0s}
+    .ray:nth-child(2){transform:rotate(-35deg);animation-delay:.7s}
+    .ray:nth-child(3){transform:rotate(-20deg);animation-delay:1.4s}
+    .ray:nth-child(4){transform:rotate(-5deg);animation-delay:2.1s}
+    .ray:nth-child(5){transform:rotate(10deg);animation-delay:2.8s}
+    .ray:nth-child(6){transform:rotate(25deg);animation-delay:3.5s}
+    .ray:nth-child(7){transform:rotate(40deg);animation-delay:4.2s}
+    .ray:nth-child(8){transform:rotate(55deg);animation-delay:4.9s}
+    @keyframes rayPulse { 0%,100%{opacity:0} 50%{opacity:1} }
+
+    /* ══ SCREEN ══ */
+    .screen { position:relative; width:1080px; height:1920px; display:flex; flex-direction:column; align-items:center; z-index:10; }
+
+    /* ══ HEADER ══ */
+    .header { width:100%; padding:48px 64px 24px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+
+    .logo-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .logo-ring {
+      width:96px; height:96px; border-radius:50%;
+      border:1.5px solid rgba(201,162,39,.45);
+      background:radial-gradient(circle,rgba(201,162,39,.08) 0%,transparent 70%);
+      box-shadow:0 0 24px rgba(201,162,39,.18),inset 0 0 16px rgba(201,162,39,.06);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+      animation:logoPulse 4s ease-in-out infinite;
+    }
+    .logo-ring img { width:86px; height:86px; object-fit:contain; }
+    .logo-ring .logo-default { font-size:38px; }
+    @keyframes logoPulse { 0%,100%{box-shadow:0 0 20px rgba(201,162,39,.15)} 50%{box-shadow:0 0 36px rgba(201,162,39,.38)} }
+    .logo-label { font-size:11px; color:rgba(201,162,39,.55); letter-spacing:1.5px; text-align:center; line-height:1.4; }
+
+    .header-center { flex:1; text-align:center; padding:0 24px; }
+    .event-pill {
+      display:inline-block;
+      background:linear-gradient(135deg,rgba(201,162,39,.12),rgba(124,58,237,.12));
+      border:1px solid rgba(201,162,39,.35);
+      border-radius:50px; padding:5px 22px;
+      font-size:13px; color:rgba(240,208,96,.85); letter-spacing:2px; margin-bottom:10px;
+    }
+    .header-title { font-size:30px; font-weight:800; color:#fff; line-height:1.25; text-shadow:0 0 40px rgba(201,162,39,.35); }
+    .header-sub { margin-top:7px; font-size:16px; color:rgba(201,162,39,.65); letter-spacing:1px; }
+
+    .h-divider { width:82%; display:flex; align-items:center; gap:0; flex-shrink:0; }
+    .h-divider-line { flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(201,162,39,.5),transparent); }
+    .h-divider-star { color:var(--gold); font-size:13px; padding:0 10px; }
+
+    /* ══ TICKER ══ */
+    .ticker { width:100%; overflow:hidden; background:linear-gradient(90deg,transparent,rgba(124,58,237,.12),rgba(201,162,39,.08),rgba(124,58,237,.12),transparent); border-top:1px solid rgba(201,162,39,.15); border-bottom:1px solid rgba(201,162,39,.15); padding:11px 0; flex-shrink:0; margin-top:14px; }
+    .ticker-track { display:flex; gap:70px; white-space:nowrap; animation:tickerScroll 22s linear infinite; width:max-content; }
+    .ticker-item { font-size:15px; color:rgba(255,255,255,.65); display:flex; align-items:center; gap:10px; }
+    .t-star { color:var(--gold); font-size:11px; }
+    @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* ══ MAIN AREA ══ */
+    .main-area { flex:1; width:100%; display:flex; align-items:center; justify-content:center; padding:30px 70px; position:relative; }
+    .card-stage { position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+
+    /* ══ GRAD CARD ══ */
+    .grad-card {
+      position:absolute; width:860px;
+      background:linear-gradient(155deg,rgba(255,255,255,.045) 0%,rgba(124,58,237,.07) 35%,rgba(201,162,39,.045) 70%,rgba(255,255,255,.03) 100%);
+      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border-radius:44px; border:1px solid rgba(201,162,39,.28);
+      padding:58px 64px 50px;
+      display:flex; flex-direction:column; align-items:center;
+      opacity:0; transform:scale(.86) translateY(70px);
+      will-change:transform,opacity,filter;
+      box-shadow:0 0 0 1px rgba(255,255,255,.04) inset, 0 40px 120px rgba(0,0,0,.6), 0 0 60px rgba(124,58,237,.08);
+    }
+
+    .cc { position:absolute; width:50px; height:50px; border-color:rgba(201,162,39,.45); border-style:solid; }
+    .cc.tl{top:22px;right:22px;border-width:2px 0 0 2px;border-radius:10px 0 0 0}
+    .cc.tr{top:22px;left:22px;border-width:2px 2px 0 0;border-radius:0 10px 0 0}
+    .cc.bl{bottom:22px;right:22px;border-width:0 0 2px 2px;border-radius:0 0 0 10px}
+    .cc.br{bottom:22px;left:22px;border-width:0 2px 2px 0;border-radius:0 0 10px 0}
+
+    .avatar-wrap { position:relative; margin-bottom:44px; }
+    .avatar-glow { position:absolute; inset:-20px; border-radius:50%; filter:blur(20px); animation:glowPulse 3s ease-in-out infinite; }
+    @keyframes glowPulse { 0%,100%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.15)} }
+    .avatar-ring { width:190px;height:190px;border-radius:50%;border:2.5px solid var(--gold);box-shadow:0 0 32px rgba(201,162,39,.45),0 0 70px rgba(201,162,39,.18);display:flex;align-items:center;justify-content:center;position:relative;z-index:2; }
+    .avatar-inner { width:162px;height:162px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:76px;font-weight:900;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.4); }
+    .orbit { position:absolute;width:220px;height:220px;border-radius:50%;border:1px dashed rgba(201,162,39,.25);top:50%;left:50%;transform:translate(-50%,-50%);animation:orbit 12s linear infinite; }
+    @keyframes orbit{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+    .orbit-dot { position:absolute;width:7px;height:7px;background:var(--gold);border-radius:50%;top:-4px;left:50%;margin-left:-3.5px;box-shadow:0 0 8px rgba(201,162,39,.8); }
+    .grad-cap-badge { position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#b8860b,#f0d060,#b8860b);border-radius:30px;padding:6px 20px;font-size:13px;color:#1a0533;font-weight:800;white-space:nowrap;z-index:3;box-shadow:0 4px 20px rgba(201,162,39,.4); }
+
+    .student-name { font-size:50px;font-weight:900;color:#fff;text-align:center;line-height:1.2;margin-bottom:12px;text-shadow:0 0 50px rgba(124,58,237,.6),0 4px 24px rgba(0,0,0,.35); }
+    .grad-pill { display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(201,162,39,.13),rgba(124,58,237,.13));border:1px solid rgba(201,162,39,.38);border-radius:50px;padding:8px 26px;font-size:16px;color:rgba(240,208,96,.9);margin-bottom:42px;letter-spacing:1px; }
+
+    .divider { width:100%;display:flex;align-items:center;gap:18px;margin-bottom:38px; }
+    .div-line { flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,39,.38),transparent); }
+    .div-icon { color:var(--gold);font-size:18px; }
+
+    .msg-box { background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.07);border-radius:22px;padding:38px 44px;text-align:center;width:100%;position:relative;margin-bottom:28px; }
+    .q-mark { position:absolute;top:-8px;right:22px;font-family:Georgia,serif;font-size:90px;color:rgba(201,162,39,.14);line-height:1;pointer-events:none; }
+    .msg-text { font-size:23px;line-height:2;color:rgba(255,255,255,.84);font-weight:400; }
+
+    .sig { display:flex;align-items:center;gap:14px;margin-top:20px; }
+    .sig-line { width:36px;height:1px;background:rgba(201,162,39,.45); }
+    .sig-name { font-size:18px;color:rgba(201,162,39,.8);font-weight:500; }
+
+    .quote-row { width:100%;text-align:center;margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.05); }
+    .quote-text { font-size:17px;color:rgba(255,255,255,.35);font-style:italic;letter-spacing:.5px; }
+
+    /* ══ PROGRESS ══ */
+    .timer-bar-wrap { width:82%;height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin:0 auto 6px;flex-shrink:0; }
+    .timer-bar { height:100%;width:0%;background:linear-gradient(90deg,var(--purple-light),var(--gold));border-radius:2px;transition:width linear; }
+
+    .progress-wrap { width:100%;display:flex;justify-content:center;gap:11px;padding:8px 0 12px;flex-shrink:0; }
+    .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .55s cubic-bezier(.4,0,.2,1); }
+    .dot.active { background:var(--gold);box-shadow:0 0 10px rgba(201,162,39,.7);width:32px;border-radius:4px; }
+
+    /* ══ BOTTOM BAR ══ */
+    .bottom-bar { width:100%;padding:16px 64px 42px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-top:1px solid rgba(201,162,39,.10); }
+    .counter-badge { display:inline-flex;align-items:center;gap:9px;background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.25);border-radius:50px;padding:6px 16px; }
+    .counter-num { font-size:22px;font-weight:800;color:var(--gold); }
+    .counter-lbl { font-size:12px;color:rgba(255,255,255,.45); }
+    .credit { font-size:13px;color:rgba(201,162,39,.45);letter-spacing:1px;text-align:center; }
+    .datetime { font-size:13px;color:rgba(255,255,255,.35);text-align:left;line-height:1.7; }
+
+    /* ══ FLOATING SEND BUTTON ══ */
+    .fab {
+      position:fixed; bottom:56px; left:50%; transform:translateX(-50%);
+      background:linear-gradient(135deg,#7c3aed,#a855f7);
+      border:none; border-radius:60px;
+      padding:20px 54px;
+      font-family:'Tajawal',sans-serif; font-size:24px; font-weight:800; color:#fff;
+      cursor:pointer; z-index:200;
+      box-shadow:0 8px 40px rgba(124,58,237,.55), 0 0 0 0 rgba(124,58,237,.4);
+      animation:fabPulse 2.5s ease-in-out infinite;
+      display:flex; align-items:center; gap:12px;
+      letter-spacing:1px;
+    }
+    @keyframes fabPulse {
+      0%,100% { box-shadow:0 8px 40px rgba(124,58,237,.55), 0 0 0 0 rgba(124,58,237,.35); }
+      50%      { box-shadow:0 8px 50px rgba(124,58,237,.7), 0 0 0 18px rgba(124,58,237,0); }
+    }
+    .fab:hover { opacity:.92; transform:translateX(-50%) scale(1.04); }
+
+    /* ══ MESSAGE MODAL ══ */
+    .modal-overlay {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.88);
+      backdrop-filter:blur(16px);
+      z-index:500;
+      display:none; align-items:center; justify-content:center;
+    }
+    .modal-overlay.open { display:flex; }
+
+    .modal-box {
+      background:linear-gradient(155deg,#1a0a38,#0f0820);
+      border:1px solid rgba(201,162,39,.3);
+      border-radius:36px;
+      padding:56px 60px;
+      width:860px;
+      box-shadow:0 0 80px rgba(124,58,237,.3), 0 40px 100px rgba(0,0,0,.7);
+      position:relative;
+    }
+
+    .modal-close {
+      position:absolute; top:24px; left:30px;
+      background:rgba(255,255,255,.08); border:none;
+      width:44px; height:44px; border-radius:50%;
+      font-size:20px; color:#fff; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s;
+    }
+    .modal-close:hover { background:rgba(255,255,255,.15); }
+
+    .modal-title { font-size:34px; font-weight:900; color:#fff; text-align:center; margin-bottom:6px; }
+    .modal-sub   { font-size:17px; color:rgba(201,162,39,.7); text-align:center; margin-bottom:44px; }
+
+    .form-field { margin-bottom:28px; }
+    .form-label {
+      display:block; font-size:18px; font-weight:600;
+      color:rgba(255,255,255,.7); margin-bottom:10px;
+    }
+    .form-input {
+      width:100%; padding:18px 22px;
+      background:rgba(255,255,255,.05);
+      border:1.5px solid rgba(255,255,255,.12);
+      border-radius:16px; color:#fff;
+      font-family:'Tajawal',sans-serif; font-size:20px;
+      outline:none; transition:border-color .3s;
+    }
+    .form-input:focus { border-color:rgba(201,162,39,.6); }
+    .form-input::placeholder { color:rgba(255,255,255,.3); }
+
+    textarea.form-input { resize:none; height:150px; line-height:1.8; }
+
+    .btn-submit {
+      width:100%; padding:22px;
+      background:linear-gradient(135deg,#b8860b,#f0d060,#b8860b);
+      border:none; border-radius:18px;
+      font-family:'Tajawal',sans-serif; font-size:26px; font-weight:900;
+      color:#1a0533; cursor:pointer;
+      transition:all .25s;
+      box-shadow:0 8px 30px rgba(201,162,39,.35);
+      margin-top:8px;
+    }
+    .btn-submit:hover { transform:translateY(-3px); box-shadow:0 14px 40px rgba(201,162,39,.5); }
+    .btn-submit:active { transform:scale(.98); }
+
+    /* Success state */
+    .success-state { text-align:center; padding:20px 0; display:none; }
+    .success-icon { font-size:72px; margin-bottom:16px; display:block; }
+    .success-title { font-size:30px; font-weight:900; color:#fff; margin-bottom:8px; }
+    .success-sub   { font-size:18px; color:rgba(201,162,39,.7); }
+  </style>
+</head>
+<body>
+
+<div class="bg-base"></div>
+<div class="aurora"><div class="a1"></div><div class="a2"></div><div class="a3"></div><div class="a4"></div></div>
+<canvas id="stars-canvas" width="1080" height="1920"></canvas>
+<canvas id="confetti-canvas" width="1080" height="1920"></canvas>
+<div class="rays-wrap">
+  <div class="ray"></div><div class="ray"></div><div class="ray"></div><div class="ray"></div>
+  <div class="ray"></div><div class="ray"></div><div class="ray"></div><div class="ray"></div>
+</div>
+
+<!-- SCREEN -->
+<div class="screen">
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo-ring" id="ministry-logo-wrap">
+        <span class="logo-default">🏛</span>
+      </div>
+      <div class="logo-label" id="ministry-label">وزارة<br>التعليم</div>
+    </div>
+
+    <div class="header-center">
+      <div class="event-pill">✦ حفل تخرج ✦</div>
+      <div class="header-title" id="school-name-el">الثانوية الثالثة عشرة بعرعر</div>
+      <div class="header-sub" id="batch-el">دفعة الفخر والعطاء · ١٤٤٦ هـ</div>
+    </div>
+
+    <div class="logo-wrap">
+      <div class="logo-ring" id="school-logo-wrap">
+        <span class="logo-default">🎓</span>
+      </div>
+      <div class="logo-label">شعار<br>المدرسة</div>
+    </div>
+  </div>
+
+  <div class="h-divider">
+    <div class="h-divider-line"></div>
+    <div class="h-divider-star">✦</div>
+    <div class="h-divider-line"></div>
+  </div>
+
+  <div class="ticker">
+    <div class="ticker-track" id="ticker-track">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <div class="main-area">
+    <div class="card-stage" id="stage"></div>
+  </div>
+
+  <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+  <div class="progress-wrap" id="dots"></div>
+
+  <div class="bottom-bar">
+    <div class="counter-badge">
+      <span class="counter-num" id="count-num">0</span>
+      <span class="counter-lbl">رسالة مشاركة</span>
+    </div>
+    <div class="credit">✦ تصميم رائدة النشاط: آمنة العنزي ✦</div>
+    <div class="datetime" id="datetime"></div>
+  </div>
+</div>
+
+<!-- FAB BUTTON -->
+<button class="fab" onclick="openModal()">
+  💌 أرسل رسالة لابنتكِ
+</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+
+    <!-- Form -->
+    <div id="form-wrap">
+      <div class="modal-title">💌 رسالة من القلب</div>
+      <div class="modal-sub">اكتب كلمتك الطيبة لابنتكِ الخريجة</div>
+
+      <div class="form-field">
+        <label class="form-label">اسم الطالبة (ابنتكِ) *</label>
+        <input class="form-input" id="f-student" type="text" placeholder="مثال: فاطمة أحمد" maxlength="60" required>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">اسمكِ (ولي الأمر) *</label>
+        <input class="form-input" id="f-parent" type="text" placeholder="مثال: والدة فاطمة" maxlength="60" required>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">رسالتكِ لها *</label>
+        <textarea class="form-input" id="f-msg" placeholder="اكتبي من قلبكِ..." maxlength="300" required></textarea>
+      </div>
+
+      <button class="btn-submit" onclick="submitForm()">إرسال ❤️</button>
+    </div>
+
+    <!-- Success -->
+    <div class="success-state" id="success-wrap">
+      <span class="success-icon">🎉</span>
+      <div class="success-title">تم إرسال رسالتكِ!</div>
+      <div class="success-sub">ستظهر على الشاشة قريباً 🌸</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════ CONSTANTS ════════ */
+const COLORS  = ['#7c3aed','#0e7490','#be185d','#b45309','#065f46','#4338ca','#9d174d','#0f766e','#92400e','#1d4ed8'];
+const EMOJIS  = ['🌸','⭐','💫','🌟','🌺','✨','🎯','🌙','🦋','👑','🌹','🎀'];
+const QUOTES  = [
+  'النجاح بداية رحلة، لا نهايتها',
+  'من جدّ وجد ومن زرع حصد',
+  'وما توفيقي إلا بالله',
+  'الأمل نور يضيء دروب الطامحات',
+  'العلم نور والجهل ظلام',
+  'اجعلي من كل يوم تحفة',
+  'أضيئي الدرب لمن يأتي بعدكِ',
+  'لكل مجتهدة نصيب من الفخر',
+  'الأيام القادمة بيدكِ تصنعينها',
+  'طيّري عالياً فالسماء هي البداية'
+];
+
+const DEMO = [
+  { id:'d1', studentName:'فاطمة الأحمدي',  parentName:'والدتها', message:'يا نور عيوني، في كل خطوة خطوتيها رأيت فيكِ شمساً لا تغيب. اليوم وأنتِ تلبسين ثوب النجاح أدعو الله أن يتمّم عليكِ نعمه.', active:true },
+  { id:'d2', studentName:'نورة العمري',    parentName:'والدها',  message:'ابنتي الغالية، زرعتِ بعرقكِ وصبركِ وها أنتِ تحصدين. لا حدّ لطموحكِ ولا سقف لأحلامكِ. نحن خلفكِ في كل طريق.', active:true },
+  { id:'d3', studentName:'ريم السهلي',     parentName:'أسرة السهلي', message:'ما أجمل هذا اليوم وأنتِ ترتدين التاج الذي صنعتِه بأناملكِ الرقيقة. أنتِ فخرنا وتاجنا وكل أمانينا.', active:true },
+];
+
+const DURATION = 9000;
+
+/* ════════ STARS ════════ */
+const sc = document.getElementById('stars-canvas');
+const sx = sc.getContext('2d');
+const stars = Array.from({length:220},()=>({ x:Math.random()*1080, y:Math.random()*1920, r:Math.random()*1.6+.2, phase:Math.random()*Math.PI*2, speed:Math.random()*.8+.3 }));
+function animStars(t){ sx.clearRect(0,0,1080,1920); stars.forEach(s=>{ const a=.25+.75*(.5+.5*Math.sin(t*.001*s.speed+s.phase)); sx.beginPath(); sx.arc(s.x,s.y,s.r,0,Math.PI*2); sx.fillStyle=`rgba(255,255,255,${a.toFixed(2)})`; sx.fill(); }); requestAnimationFrame(animStars); }
+requestAnimationFrame(animStars);
+
+/* ════════ CONFETTI ════════ */
+const cc = document.getElementById('confetti-canvas');
+const cx = cc.getContext('2d');
+let confetti=[];
+const confC=['#c9a227','#f0d060','#a855f7','#f472b6','#fff','#7c3aed','#60d5fa'];
+function spawnConf(n=120){ for(let i=0;i<n;i++) confetti.push({x:Math.random()*1080,y:-30-Math.random()*300,vx:(Math.random()-.5)*7,vy:Math.random()*5+2,color:confC[~~(Math.random()*confC.length)],w:Math.random()*14+4,h:Math.random()*7+3,rot:Math.random()*360,rs:(Math.random()-.5)*9,life:1}); }
+function animConf(){ cx.clearRect(0,0,1080,1920); confetti=confetti.filter(p=>p.life>.01); confetti.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=.06; p.rot+=p.rs; p.life-=.007; cx.save(); cx.globalAlpha=Math.max(0,p.life); cx.translate(p.x,p.y); cx.rotate(p.rot*Math.PI/180); cx.fillStyle=p.color; cx.fillRect(-p.w/2,-p.h/2,p.w,p.h); cx.restore(); }); requestAnimationFrame(animConf); }
+animConf();
+
+/* ════════ PARTICLES ════════ */
+const pC=['rgba(201,162,39,.6)','rgba(168,85,247,.5)','rgba(244,114,182,.5)','rgba(255,255,255,.4)'];
+for(let i=0;i<28;i++){ const el=document.createElement('div'); el.className='particle'; const s=Math.random()*5+2; el.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*1080}px;background:${pC[~~(Math.random()*pC.length)]};animation-duration:${12+Math.random()*20}s;animation-delay:${Math.random()*-30}s;`; document.body.appendChild(el); }
+
+/* ════════ DATETIME ════════ */
+function updateTime(){ const n=new Date(); document.getElementById('datetime').innerHTML=n.toLocaleDateString('ar-SA-u-nu-latn',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'<br>'+n.toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'}); }
+updateTime(); setInterval(updateTime,30000);
+
+/* ════════ SETTINGS ════════ */
+function applySettings(){
+  const s = JSON.parse(localStorage.getItem('grad_settings') || '{}');
+  if(s.schoolName) document.getElementById('school-name-el').textContent = s.schoolName;
+  if(s.batch)      document.getElementById('batch-el').textContent = s.batch;
+
+  // logos
+  if(s.ministryLogo){ const w=document.getElementById('ministry-logo-wrap'); w.innerHTML=`<img src="${s.ministryLogo}" style="width:86px;height:86px;object-fit:contain;">`; }
+  if(s.schoolLogo)  { const w=document.getElementById('school-logo-wrap');   w.innerHTML=`<img src="${s.schoolLogo}"   style="width:86px;height:86px;object-fit:contain;">`; }
+
+  // ticker
+  const tickText = s.ticker || 'مبارك للخريجات العزيزات';
+  const items = [tickText, 'اليوم تحصدن ثمار سنوات من الجد والاجتهاد', 'نفخر بكنّ يا نجمات المستقبل', 'التعليم جواز سفركِ إلى آفاق لا حدود لها'];
+  const doubled = [...items,...items];
+  document.getElementById('ticker-track').innerHTML = doubled.map(t=>`<div class="ticker-item"><span class="t-star">✦</span>${t}<span class="t-star">✦</span></div>`).join('');
+}
+
+/* ════════ MESSAGES → GRADUATES ════════ */
+function getGraduates(){
+  const raw = JSON.parse(localStorage.getItem('grad_messages')||'[]').filter(m=>m.active!==false);
+  const src = raw.length ? raw : DEMO;
+  return src.map((m,i)=>({
+    name:    m.studentName,
+    initials:m.studentName ? m.studentName[0] : '✦',
+    color:   COLORS[i%COLORS.length],
+    emoji:   EMOJIS[i%EMOJIS.length],
+    message: m.message,
+    parent:  m.parentName ? `ولي الأمر: ${m.parentName}` : '',
+    quote:   QUOTES[i%QUOTES.length]
+  }));
+}
+
+/* ════════ CARD ENGINE ════════ */
+const stage    = document.getElementById('stage');
+const dotsWrap = document.getElementById('dots');
+let cardEls=[], graduates=[], current=0, mainTimer=null;
+
+function buildCards(){
+  stage.innerHTML='';
+  dotsWrap.innerHTML='';
+  cardEls=[];
+  graduates = getGraduates();
+  document.getElementById('count-num').textContent = JSON.parse(localStorage.getItem('grad_messages')||'[]').filter(m=>m.active!==false).length;
+
+  graduates.forEach((g,i)=>{
+    const card=document.createElement('div');
+    card.className='grad-card';
+    card.innerHTML=`
+      <div class="cc tl"></div><div class="cc tr"></div>
+      <div class="cc bl"></div><div class="cc br"></div>
+      <div class="avatar-wrap">
+        <div class="avatar-glow" style="background:radial-gradient(circle,${g.color}55 0%,transparent 70%)"></div>
+        <div class="avatar-ring">
+          <div class="avatar-inner" style="background:linear-gradient(145deg,${g.color}cc,${g.color})">${g.initials}</div>
+        </div>
+        <div class="orbit"><div class="orbit-dot"></div></div>
+        <div class="grad-cap-badge">🎓 خريجة دفعة ١٤٤٦هـ</div>
+      </div>
+      <div class="student-name">${g.name}</div>
+      <div class="grad-pill"><span>${g.emoji}</span><span>مبارك التخرج</span><span>${g.emoji}</span></div>
+      <div class="divider"><div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div></div>
+      <div class="msg-box">
+        <div class="q-mark">"</div>
+        <div class="msg-text">${g.message}</div>
+      </div>
+      <div class="sig">
+        <div class="sig-line"></div>
+        <div class="sig-name">${g.parent}</div>
+        <div class="sig-line"></div>
+      </div>
+      <div class="quote-row"><div class="quote-text">"${g.quote}"</div></div>
+    `;
+    stage.appendChild(card);
+    cardEls.push(card);
+
+    const dot=document.createElement('div');
+    dot.className='dot'+(i===0?' active':'');
+    dot.id=`dot${i}`;
+    dotsWrap.appendChild(dot);
+  });
+}
+
+function startBar(){
+  const b=document.getElementById('timer-bar');
+  b.style.transition='none'; b.style.width='0%';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ b.style.transition=`width ${DURATION}ms linear`; b.style.width='100%'; }));
+}
+
+function showCard(idx){
+  cardEls.forEach((c,i)=>{ if(i!==idx) gsap.set(c,{opacity:0,scale:.86,y:70,filter:'blur(12px)'}); document.getElementById(`dot${i}`).classList.toggle('active',i===idx); });
+  const card=cardEls[idx];
+  const tl=gsap.timeline();
+  tl.set(card,{opacity:0,scale:.88,y:80,filter:'blur(14px)'})
+    .to(card,{opacity:1,scale:1,y:0,filter:'blur(0px)',duration:1.5,ease:'power3.out'});
+  const kids=[card.querySelector('.avatar-wrap'),card.querySelector('.student-name'),card.querySelector('.grad-pill'),card.querySelector('.divider'),card.querySelector('.msg-box'),card.querySelector('.sig'),card.querySelector('.quote-row')];
+  tl.from(kids,{y:22,opacity:0,duration:.7,stagger:.11,ease:'power2.out'},'-=.9');
+  setTimeout(()=>spawnConf(90),300);
+  setTimeout(()=>spawnConf(60),1100);
+  startBar();
+}
+
+function nextCard(){
+  const out=cardEls[current];
+  gsap.to(out,{ opacity:0,scale:.91,y:-55,filter:'blur(10px)', duration:.85,ease:'power2.in',
+    onComplete:()=>{ current=(current+1)%graduates.length; showCard(current); }
+  });
+}
+
+function startShow(){
+  if(mainTimer) clearInterval(mainTimer);
+  current=0; buildCards();
+  showCard(0);
+  mainTimer=setInterval(nextCard,DURATION);
+}
+
+/* ════════ MODAL ════════ */
+function openModal(){
+  document.getElementById('form-wrap').style.display='block';
+  document.getElementById('success-wrap').style.display='none';
+  document.getElementById('f-student').value='';
+  document.getElementById('f-parent').value='';
+  document.getElementById('f-msg').value='';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('f-student').focus(),300);
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+}
+
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('modal')) closeModal();
+}
+
+function submitForm(){
+  const s=document.getElementById('f-student').value.trim();
+  const p=document.getElementById('f-parent').value.trim();
+  const m=document.getElementById('f-msg').value.trim();
+  if(!s||!p||!m){ alert('يرجى ملء جميع الحقول'); return; }
+
+  const msgs=JSON.parse(localStorage.getItem('grad_messages')||'[]');
+  msgs.push({ id:'m'+Date.now(), studentName:s, parentName:p, message:m, active:true, createdAt:Date.now() });
+  localStorage.setItem('grad_messages',JSON.stringify(msgs));
+
+  // show success
+  document.getElementById('form-wrap').style.display='none';
+  document.getElementById('success-wrap').style.display='block';
+  spawnConf(150);
+
+  // refresh cards & close after 3s
+  setTimeout(()=>{ startShow(); closeModal(); }, 3000);
+}
+
+/* ════════ AUTO-REFRESH SETTINGS ════════ */
+setInterval(()=>{ applySettings(); }, 15000);
+
+// Refresh cards if new messages arrive (every 30s)
+setInterval(()=>{
+  const newMsgs=JSON.parse(localStorage.getItem('grad_messages')||'[]').filter(m=>m.active!==false);
+  if(newMsgs.length !== graduates.length){ startShow(); }
+}, 30000);
+
+/* ════════ BOOT ════════ */
+applySettings();
+startShow();
+</script>
+</body>
+</html>

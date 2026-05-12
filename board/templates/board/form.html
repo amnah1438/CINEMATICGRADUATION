@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>أرسلي رسالة لابنتكِ 💌</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 40% 20%, #1a0533 0%, #05010f 70%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      color: #fff;
+    }
+
+    .card {
+      background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(124,58,237,.07), rgba(201,162,39,.04));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(201,162,39,.28);
+      border-radius: 32px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 40px rgba(124,58,237,.1);
+    }
+
+    .form-header { text-align: center; margin-bottom: 36px; }
+    .form-icon { font-size: 52px; margin-bottom: 12px; }
+    .form-title { font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 6px; }
+    .form-sub   { font-size: 15px; color: rgba(201,162,39,.7); }
+
+    .field { margin-bottom: 22px; }
+    .field label { display: block; font-size: 15px; font-weight: 600; color: rgba(255,255,255,.65); margin-bottom: 8px; }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: 15px 18px;
+      background: rgba(255,255,255,.05);
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      color: #fff;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 18px;
+      outline: none;
+      transition: border-color .25s;
+    }
+    .field input:focus,
+    .field textarea:focus { border-color: rgba(201,162,39,.6); }
+    .field input::placeholder,
+    .field textarea::placeholder { color: rgba(255,255,255,.28); }
+    .field textarea { resize: none; height: 130px; line-height: 1.8; }
+
+    .error-msg {
+      background: rgba(248,113,113,.1);
+      border: 1px solid rgba(248,113,113,.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fca5a5;
+      font-size: 14px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #b8860b, #f0d060, #b8860b);
+      border: none;
+      border-radius: 16px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #1a0533;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 6px 24px rgba(201,162,39,.35);
+      margin-top: 8px;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(201,162,39,.5); }
+    .btn-submit:active { transform: scale(.98); }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: rgba(255,255,255,.35);
+      font-size: 14px;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .back-link:hover { color: rgba(201,162,39,.7); }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="form-header">
+    <div class="form-icon">💌</div>
+    <div class="form-title">رسالة من القلب</div>
+    <div class="form-sub">اكتبي كلمتكِ الطيبة لابنتكِ الخريجة</div>
+  </div>
+
+  {% if error %}
+  <div class="error-msg">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="field">
+      <label>اسم الطالبة (ابنتكِ) ✦</label>
+      <input type="text" name="student_name" placeholder="مثال: فاطمة أحمد" maxlength="60" required autofocus>
+    </div>
+
+    <div class="field">
+      <label>اسمكِ (ولي الأمر) ✦</label>
+      <input type="text" name="parent_name" placeholder="مثال: والدة فاطمة" maxlength="60" required>
+    </div>
+
+    <div class="field">
+      <label>رسالتكِ لها ✦</label>
+      <textarea name="message" placeholder="اكتبي من قلبكِ…" maxlength="400" required></textarea>
+    </div>
+
+    <button type="submit" class="btn-submit">إرسال ❤️</button>
+  </form>
+
+  <a href="{% url 'display' %}" class="back-link">← العودة لشاشة العرض</a>
+</div>
+
+</body>
+</html>
