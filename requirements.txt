@@ -1,3 +1,5 @@
 Django>=5.2
 Pillow
 python-dotenv
+cloudinary
+django-cloudinary-storage

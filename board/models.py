@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class GraduationSettings(models.Model):
@@ -17,15 +18,15 @@ class GraduationSettings(models.Model):
         default="مبارك للخريجات العزيزات",
         verbose_name="نص شريط الأخبار"
     )
-    ministry_logo = models.ImageField(
-        upload_to='logos/',
+    ministry_logo = CloudinaryField(
+        'شعار وزارة التعليم',
+        folder='graduation/logos',
         blank=True, null=True,
-        verbose_name="شعار وزارة التعليم"
     )
-    school_logo = models.ImageField(
-        upload_to='logos/',
+    school_logo = CloudinaryField(
+        'شعار المدرسة',
+        folder='graduation/logos',
         blank=True, null=True,
-        verbose_name="شعار المدرسة"
     )
     card_speed = models.PositiveIntegerField(
         default=9,
