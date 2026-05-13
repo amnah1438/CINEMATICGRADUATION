@@ -147,38 +147,38 @@
     @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
     /* ══ 3D STAGE ══ */
-    .main-area { flex:1; width:100%; display:flex; align-items:center; justify-content:center; padding:clamp(.5rem,2vh,2rem) clamp(.5rem,2vw,2rem); position:relative; overflow:hidden; }
+    .main-area { flex:1; width:100%; display:flex; align-items:center; justify-content:center; padding:clamp(.5rem,2vh,2rem) 0; position:relative; }
     .card-stage {
       position:relative; width:100%; height:100%;
       display:flex; align-items:center; justify-content:center;
-      perspective:clamp(700px,140vw,2400px);
-      perspective-origin:50% 45%;
+      perspective:1200px;
+      perspective-origin:50% 42%;
       transform-style:preserve-3d;
-      min-height:clamp(360px,56vh,840px);
+      min-height:clamp(380px,60vh,860px);
     }
 
     /* ══ GRAD CARD ══ */
     .grad-card {
       position:absolute;
-      width:min(90vw, 62vh, 800px);
+      width:min(82vw,580px);
       background:var(--card-bg);
       backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
       border-radius:clamp(1.4rem,3.2vw,2.8rem);
       border:1px solid var(--card-border);
       padding:clamp(1.3rem,3.8vh,3.8rem) clamp(1rem,2.8vw,2.8rem) clamp(1rem,2.8vh,2.8rem);
       box-shadow:var(--card-shadow);
-
-      transition:transform .9s cubic-bezier(.4,0,.2,1), opacity .9s cubic-bezier(.4,0,.2,1), filter .9s ease;
+      transition:transform 1s cubic-bezier(.4,0,.2,1), opacity 1s cubic-bezier(.4,0,.2,1), filter 1s ease;
       will-change:transform,opacity,filter; transform-style:preserve-3d;
+      transform-origin:center center;
     }
 
     /* ══ 3D CAROUSEL POSITIONS ══ */
-    .grad-card[data-pos="0"]  { transform:translateX(0) translateZ(0) rotateY(0deg) scale(1); opacity:1; filter:blur(0); z-index:20; pointer-events:auto; }
-    .grad-card[data-pos="1"]  { transform:translateX(45%) translateZ(-30vw) rotateY(-32deg) scale(.8); opacity:.35; filter:blur(3px); z-index:10; pointer-events:none; }
-    .grad-card[data-pos="-1"] { transform:translateX(-45%) translateZ(-30vw) rotateY(32deg) scale(.8); opacity:.35; filter:blur(3px); z-index:10; pointer-events:none; }
-    .grad-card[data-pos="2"],
-    .grad-card[data-pos="-2"] { transform:translateX(0) translateZ(-60vw) scale(.52); opacity:.1; filter:blur(6px); z-index:5; pointer-events:none; }
-    .grad-card[data-pos="far"]{ transform:translateX(0) translateZ(-90vw) scale(.28); opacity:0; z-index:1; pointer-events:none; }
+    .grad-card[data-pos="0"]  { transform:translateZ(0px) rotateY(0deg) scale(1); opacity:1; filter:blur(0); z-index:20; pointer-events:auto; }
+    .grad-card[data-pos="1"]  { transform:translateX(62%) translateZ(-280px) rotateY(-38deg) scale(.82); opacity:.45; filter:blur(2px); z-index:10; pointer-events:none; }
+    .grad-card[data-pos="-1"] { transform:translateX(-62%) translateZ(-280px) rotateY(38deg) scale(.82); opacity:.45; filter:blur(2px); z-index:10; pointer-events:none; }
+    .grad-card[data-pos="2"]  { transform:translateX(110%) translateZ(-550px) rotateY(-55deg) scale(.55); opacity:.15; filter:blur(5px); z-index:5; pointer-events:none; }
+    .grad-card[data-pos="-2"] { transform:translateX(-110%) translateZ(-550px) rotateY(55deg) scale(.55); opacity:.15; filter:blur(5px); z-index:5; pointer-events:none; }
+    .grad-card[data-pos="far"]{ transform:translateZ(-900px) scale(.2); opacity:0; z-index:1; pointer-events:none; }
 
     .cc { position:absolute; border-color:var(--cc-border); border-style:solid; width:clamp(26px,3.2vw,48px); height:clamp(26px,3.2vw,48px); }
     .cc.tl{top:1em; right:1em; border-width:2px 0 0 2px; border-radius:.55em 0 0 0}
