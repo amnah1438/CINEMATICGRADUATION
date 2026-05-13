@@ -32,6 +32,26 @@ class GraduationSettings(models.Model):
         default=9,
         verbose_name="مدة عرض كل بطاقة (ثانية)"
     )
+    theme = models.CharField(
+        max_length=50, default='gold-dark',
+        verbose_name="الثيم"
+    )
+    font = models.CharField(
+        max_length=60, default='Tajawal',
+        verbose_name="الخط"
+    )
+    custom_primary = models.CharField(
+        max_length=20, blank=True, default='',
+        verbose_name="اللون الأساسي المخصص"
+    )
+    custom_accent = models.CharField(
+        max_length=20, blank=True, default='',
+        verbose_name="لون الإضاءة المخصص"
+    )
+    panel_password = models.CharField(
+        max_length=100, default='1446',
+        verbose_name="كلمة مرور لوحة الإدارة"
+    )
 
     class Meta:
         verbose_name = "إعدادات الحفل"
