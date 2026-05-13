@@ -4,533 +4,166 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة إدارة حفل التخرج</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&family=Almarai:wght@300;400;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --gold: #c9a227;
-      --gold-light: #f0d060;
-      --purple: #7c3aed;
-      --navy: #05010f;
-      --bg: #0f0a1e;
-      --surface: #1a1030;
-      --surface2: #221540;
-      --border: rgba(201,162,39,0.2);
-      --text: #e8e0f0;
-      --muted: rgba(232,224,240,0.5);
+      --gold:#c9a227; --gold-lt:#f0d060; --purple:#7c3aed;
+      --bg:#0f0a1e; --surface:#1a1030; --surface2:#221540;
+      --border:rgba(201,162,39,0.22); --text:#e8e0f0; --muted:rgba(232,224,240,0.5);
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body { font-family:'Tajawal',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ═══ LOGIN ═══ */
+    #login-screen { position:fixed; inset:0; background:radial-gradient(ellipse at 40% 30%,#1a0533 0%,#05010f 70%); display:flex; align-items:center; justify-content:center; z-index:1000; }
+    .login-box { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:24px; padding:48px 52px; width:420px; text-align:center; backdrop-filter:blur(20px); }
+    .login-icon { font-size:52px; margin-bottom:16px; }
+    .login-title { font-size:24px; font-weight:800; color:#fff; margin-bottom:6px; }
+    .login-sub { font-size:14px; color:var(--muted); margin-bottom:32px; }
+    .login-box input[type="password"] { width:100%; padding:14px 18px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:#fff; font-family:inherit; font-size:18px; text-align:center; letter-spacing:6px; outline:none; margin-bottom:16px; transition:border-color 0.3s; }
+    .login-box input[type="password"]:focus { border-color:var(--gold); }
+    .btn-login { width:100%; padding:14px; background:linear-gradient(135deg,var(--purple),#a855f7); border:none; border-radius:12px; color:#fff; font-family:inherit; font-size:18px; font-weight:700; cursor:pointer; transition:opacity .2s,transform .2s; }
+    .btn-login:hover { opacity:.9; transform:translateY(-1px); }
+    .login-error { color:#f87171; font-size:14px; margin-top:12px; display:none; }
 
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+    /* ═══ MAIN ═══ */
+    #admin-main { display:none; }
+    .top-bar { background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border); padding:18px 40px; display:flex; align-items:center; justify-content:space-between; }
+    .top-bar-title { display:flex; align-items:center; gap:14px; }
+    .top-bar-title .icon { font-size:28px; }
+    .top-bar-title h1 { font-size:20px; font-weight:800; color:#fff; }
+    .top-bar-title p  { font-size:13px; color:var(--muted); }
+    .btn-logout { background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); border-radius:10px; padding:8px 18px; color:#f87171; font-family:inherit; font-size:14px; cursor:pointer; transition:background .2s; }
+    .btn-logout:hover { background:rgba(248,113,113,.2); }
+
+    /* TABS */
+    .tabs { display:flex; gap:0; padding:0 40px; border-bottom:1px solid var(--border); background:rgba(255,255,255,.02); overflow-x:auto; }
+    .tab-btn { padding:16px 22px; background:none; border:none; border-bottom:3px solid transparent; color:var(--muted); font-family:inherit; font-size:15px; font-weight:500; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+    .tab-btn.active { color:var(--gold); border-bottom-color:var(--gold); }
+    .tab-btn:hover { color:#fff; }
+    .tab-count { background:rgba(201,162,39,.15); border-radius:50px; padding:2px 10px; font-size:12px; color:var(--gold); }
+
+    /* CONTENT */
+    .content { padding:36px 40px; max-width:960px; margin:0 auto; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    .section { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:28px 32px; margin-bottom:22px; }
+    .section-title { font-size:17px; font-weight:700; color:#fff; margin-bottom:5px; display:flex; align-items:center; gap:10px; }
+    .section-sub { font-size:13px; color:var(--muted); margin-bottom:20px; padding-bottom:18px; border-bottom:1px solid rgba(255,255,255,.06); }
+
+    .field-group { margin-bottom:18px; }
+    label { display:block; font-size:14px; color:var(--muted); margin-bottom:8px; font-weight:500; }
+    input[type="text"],input[type="password"],input[type="number"],textarea { width:100%; padding:13px 16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:12px; color:#fff; font-family:inherit; font-size:16px; outline:none; transition:border-color .25s; resize:vertical; }
+    input:focus,textarea:focus { border-color:var(--gold); }
+
+    /* LOGO UPLOAD */
+    .logo-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .logo-upload-box { border:2px dashed rgba(201,162,39,.25); border-radius:16px; padding:24px; text-align:center; cursor:pointer; transition:all .25s; position:relative; overflow:hidden; }
+    .logo-upload-box:hover { border-color:rgba(201,162,39,.5); background:rgba(201,162,39,.04); }
+    .logo-upload-box input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; padding:0; border:none; background:none; }
+    .logo-preview { width:80px; height:80px; border-radius:50%; object-fit:contain; margin:0 auto 12px; display:block; border:2px solid var(--border); background:rgba(255,255,255,.03); }
+    .logo-placeholder { width:80px; height:80px; border-radius:50%; background:rgba(201,162,39,.08); border:2px dashed var(--border); display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 12px; }
+    .logo-upload-label { font-size:14px; font-weight:600; color:#fff; margin-bottom:4px; }
+    .logo-upload-hint { font-size:12px; color:var(--muted); }
+
+    /* BUTTONS */
+    .btn-save { padding:13px 36px; background:linear-gradient(135deg,var(--gold),#f0d060); border:none; border-radius:12px; color:#1a0533; font-family:inherit; font-size:16px; font-weight:800; cursor:pointer; transition:all .2s; }
+    .btn-save:hover { opacity:.9; transform:translateY(-2px); }
+    .save-confirm { display:none; color:#4ade80; font-size:14px; margin-top:12px; font-weight:600; }
+
+    /* ══ THEME PICKER ══ */
+    .theme-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:14px; margin-bottom:24px; }
+    .theme-card {
+      background:rgba(255,255,255,.04); border:2px solid rgba(255,255,255,.08);
+      border-radius:16px; padding:16px; cursor:pointer; transition:all .25s;
+      position:relative; overflow:hidden;
     }
+    .theme-card:hover { border-color:rgba(201,162,39,.4); transform:translateY(-2px); }
+    .theme-card.selected { border-color:var(--gold); box-shadow:0 0 20px rgba(201,162,39,.3); }
+    .theme-preview { display:flex; gap:6px; margin-bottom:10px; border-radius:10px; overflow:hidden; height:48px; }
+    .theme-swatch { flex:1; }
+    .theme-name { font-size:13px; font-weight:700; color:#fff; }
+    .theme-check { position:absolute; top:10px; left:12px; font-size:16px; color:var(--gold); display:none; }
+    .theme-card.selected .theme-check { display:block; }
 
-    /* ═══ LOGIN SCREEN ═══ */
-    #login-screen {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at 40% 30%, #1a0533 0%, #05010f 70%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
+    /* ══ FONT PICKER ══ */
+    .font-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:10px; margin-bottom:24px; }
+    .font-option { display:none; }
+    .font-label {
+      display:block; padding:14px 18px; background:rgba(255,255,255,.04);
+      border:2px solid rgba(255,255,255,.08); border-radius:12px;
+      cursor:pointer; transition:all .25s; text-align:center;
     }
-
-    .login-box {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 48px 52px;
-      width: 420px;
-      text-align: center;
-      backdrop-filter: blur(20px);
-    }
-
-    .login-icon { font-size: 52px; margin-bottom: 16px; }
-
-    .login-title {
-      font-size: 24px;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 6px;
-    }
-
-    .login-sub {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
-
-    .login-box input[type="password"] {
-      width: 100%;
-      padding: 14px 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: #fff;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 18px;
-      text-align: center;
-      letter-spacing: 6px;
-      outline: none;
-      margin-bottom: 16px;
-      transition: border-color 0.3s;
-    }
-
-    .login-box input[type="password"]:focus {
-      border-color: var(--gold);
-    }
-
-    .btn-login {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--purple), #a855f7);
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.2s;
-    }
-
-    .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-login:active { transform: scale(0.98); }
-
-    .login-error {
-      color: #f87171;
-      font-size: 14px;
-      margin-top: 12px;
-      display: none;
-    }
-
-    /* ═══ MAIN ADMIN ═══ */
-    #admin-main { display: none; }
-
-    .top-bar {
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid var(--border);
-      padding: 18px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .top-bar-title {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .top-bar-title .icon { font-size: 28px; }
-
-    .top-bar-title h1 {
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .top-bar-title p {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .btn-logout {
-      background: rgba(248,113,113,0.1);
-      border: 1px solid rgba(248,113,113,0.3);
-      border-radius: 10px;
-      padding: 8px 18px;
-      color: #f87171;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-logout:hover { background: rgba(248,113,113,0.2); }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 0;
-      padding: 0 40px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-    }
-
-    .tab-btn {
-      padding: 16px 28px;
-      background: none;
-      border: none;
-      border-bottom: 3px solid transparent;
-      color: var(--muted);
-      font-family: 'Tajawal', sans-serif;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tab-btn.active {
-      color: var(--gold);
-      border-bottom-color: var(--gold);
-    }
-
-    .tab-btn:hover { color: #fff; }
-
-    .tab-count {
-      background: rgba(201,162,39,0.15);
-      border-radius: 50px;
-      padding: 2px 10px;
-      font-size: 12px;
-      color: var(--gold);
-    }
-
-    /* Content */
-    .content { padding: 40px; max-width: 900px; margin: 0 auto; }
-
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* Section */
-    .section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px;
-      margin-bottom: 24px;
-    }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 24px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    /* Form fields */
-    .field-group { margin-bottom: 20px; }
-
-    label {
-      display: block;
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    input[type="number"],
-    textarea {
-      width: 100%;
-      padding: 13px 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      color: #fff;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.25s;
-      resize: vertical;
-    }
-
-    input:focus, textarea:focus {
-      border-color: var(--gold);
-    }
-
-    /* Logo upload */
-    .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    .logo-upload-box {
-      border: 2px dashed rgba(201,162,39,0.25);
-      border-radius: 16px;
-      padding: 28px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .logo-upload-box:hover {
-      border-color: rgba(201,162,39,0.5);
-      background: rgba(201,162,39,0.04);
-    }
-
-    .logo-upload-box input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      padding: 0;
-      border: none;
-      background: none;
-    }
-
-    .logo-preview {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: contain;
-      margin: 0 auto 12px;
-      display: block;
-      border: 2px solid var(--border);
-      background: rgba(255,255,255,0.03);
-    }
-
-    .logo-placeholder {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: rgba(201,162,39,0.08);
-      border: 2px dashed var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      margin: 0 auto 12px;
-    }
-
-    .logo-upload-label {
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .logo-upload-hint {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Save button */
-    .btn-save {
-      padding: 14px 40px;
-      background: linear-gradient(135deg, var(--gold), #f0d060);
-      border: none;
-      border-radius: 12px;
-      color: #1a0533;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
-    .btn-save:active { transform: scale(0.98); }
-
-    .save-confirm {
-      display: none;
-      color: #4ade80;
-      font-size: 14px;
-      margin-top: 12px;
-      font-weight: 600;
-    }
-
-    /* Messages list */
-    .msg-count-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .msg-count-bar h3 { font-size: 16px; font-weight: 600; color: #fff; }
-
-    .btn-clear-all {
-      padding: 8px 16px;
-      background: rgba(248,113,113,0.1);
-      border: 1px solid rgba(248,113,113,0.3);
-      border-radius: 10px;
-      color: #f87171;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .btn-clear-all:hover { background: rgba(248,113,113,0.2); }
-
-    .msg-empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-
-    .msg-empty .empty-icon { font-size: 48px; margin-bottom: 12px; }
-    .msg-empty p { font-size: 16px; }
-
-    .msg-card {
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 14px;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      transition: border-color 0.2s;
-    }
-
-    .msg-card:hover { border-color: rgba(201,162,39,0.2); }
-
-    .msg-card.inactive { opacity: 0.5; }
-
-    .msg-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--purple), #a855f7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 800;
-      color: #fff;
-      flex-shrink: 0;
-    }
-
-    .msg-body { flex: 1; min-width: 0; }
-
-    .msg-names {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-
-    .msg-student {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .msg-arrow { color: var(--muted); font-size: 14px; }
-
-    .msg-parent {
-      font-size: 14px;
-      color: rgba(201,162,39,0.8);
-    }
-
-    .msg-text {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 8px;
-      word-break: break-word;
-    }
-
-    .msg-time { font-size: 12px; color: rgba(255,255,255,0.25); }
-
-    .msg-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .btn-toggle {
-      padding: 7px 14px;
-      border-radius: 8px;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .btn-toggle.active-state {
-      background: rgba(74,222,128,0.08);
-      border-color: rgba(74,222,128,0.3);
-      color: #4ade80;
-    }
-
-    .btn-toggle.inactive-state {
-      background: rgba(251,191,36,0.08);
-      border-color: rgba(251,191,36,0.3);
-      color: #fbbf24;
-    }
-
-    .btn-delete {
-      padding: 7px 14px;
-      background: rgba(248,113,113,0.08);
-      border: 1px solid rgba(248,113,113,0.25);
-      border-radius: 8px;
-      color: #f87171;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 13px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-delete:hover { background: rgba(248,113,113,0.18); }
-
-    /* Preview link */
-    .preview-bar {
-      margin-top: 20px;
-      padding: 16px 20px;
-      background: rgba(124,58,237,0.08);
-      border: 1px solid rgba(124,58,237,0.2);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .preview-bar p { font-size: 14px; color: var(--muted); }
-
-    .btn-preview {
-      padding: 10px 24px;
-      background: rgba(124,58,237,0.2);
-      border: 1px solid rgba(124,58,237,0.4);
-      border-radius: 10px;
-      color: #a78bfa;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: background 0.2s;
-    }
-
-    .btn-preview:hover { background: rgba(124,58,237,0.35); }
-
-    /* Password change */
-    .pwd-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: end; }
-
-    /* Responsive */
-    @media (max-width: 700px) {
-      .content { padding: 20px; }
-      .logo-grid { grid-template-columns: 1fr; }
-      .pwd-grid { grid-template-columns: 1fr; }
-      .top-bar { padding: 14px 20px; }
-      .tabs { padding: 0 16px; }
+    .font-label .font-name { font-size:12px; color:var(--muted); margin-bottom:4px; display:block; }
+    .font-label .font-sample { font-size:18px; color:#fff; }
+    .font-option:checked + .font-label { border-color:var(--gold); box-shadow:0 0 15px rgba(201,162,39,.25); background:rgba(201,162,39,.06); }
+
+    /* ══ CUSTOM COLORS ══ */
+    .color-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+    .color-row label { margin:0; width:140px; flex-shrink:0; font-size:14px; }
+    .color-row input[type="color"] { width:52px; height:36px; border:1.5px solid rgba(255,255,255,.2); border-radius:8px; cursor:pointer; padding:2px; background:none; }
+    .color-row .color-hint { font-size:12px; color:var(--muted); }
+
+    /* ══ DEFAULT GRAD PHOTO ══ */
+    .grad-photo-preview { width:100px; height:100px; border-radius:50%; object-fit:cover; margin:0 auto 12px; display:block; border:3px solid var(--gold); }
+
+    /* ══ MESSAGES ══ */
+    .msg-count-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+    .msg-count-bar h3 { font-size:16px; font-weight:600; color:#fff; }
+    .btn-clear-all { padding:8px 16px; background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); border-radius:10px; color:#f87171; font-family:inherit; font-size:13px; cursor:pointer; }
+    .btn-clear-all:hover { background:rgba(248,113,113,.2); }
+
+    .msg-empty { text-align:center; padding:60px 20px; color:var(--muted); }
+    .msg-empty .empty-icon { font-size:48px; margin-bottom:12px; }
+    .msg-empty p { font-size:16px; }
+
+    .msg-card { background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:18px 22px; margin-bottom:12px; transition:border-color .2s; }
+    .msg-card:hover { border-color:rgba(201,162,39,.2); }
+    .msg-card.inactive { opacity:.5; }
+    .msg-card-top { display:flex; gap:14px; align-items:flex-start; }
+    .msg-avatar { width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,var(--purple),#a855f7); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:#fff; flex-shrink:0; overflow:hidden; }
+    .msg-avatar img { width:100%; height:100%; object-fit:cover; }
+    .msg-body { flex:1; min-width:0; }
+    .msg-names { display:flex; align-items:center; gap:10px; margin-bottom:6px; flex-wrap:wrap; }
+    .msg-student { font-size:15px; font-weight:700; color:#fff; }
+    .msg-arrow { color:var(--muted); font-size:13px; }
+    .msg-parent { font-size:13px; color:rgba(201,162,39,.8); }
+    .msg-text { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:7px; word-break:break-word; }
+    .msg-time { font-size:12px; color:rgba(255,255,255,.22); }
+    .msg-actions { display:flex; flex-direction:column; gap:7px; flex-shrink:0; }
+    .btn-toggle { padding:7px 13px; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:1px solid; transition:all .2s; white-space:nowrap; }
+    .btn-toggle.active-state  { background:rgba(74,222,128,.08); border-color:rgba(74,222,128,.3); color:#4ade80; }
+    .btn-toggle.inactive-state{ background:rgba(251,191,36,.08); border-color:rgba(251,191,36,.3); color:#fbbf24; }
+    .btn-delete { padding:7px 13px; background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); border-radius:8px; color:#f87171; font-family:inherit; font-size:13px; cursor:pointer; transition:background .2s; }
+    .btn-delete:hover { background:rgba(248,113,113,.18); }
+
+    /* Photo section in message card */
+    .msg-photo-row { display:flex; align-items:center; gap:12px; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,.06); }
+    .msg-photo-thumb { width:52px; height:52px; border-radius:50%; overflow:hidden; border:2px solid rgba(201,162,39,.3); flex-shrink:0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.04); color:var(--muted); font-size:11px; text-align:center; line-height:1.3; }
+    .msg-photo-thumb img { width:100%; height:100%; object-fit:cover; }
+    .btn-photo { padding:6px 13px; background:rgba(201,162,39,.1); border:1px solid rgba(201,162,39,.3); border-radius:8px; color:var(--gold); font-family:inherit; font-size:12px; cursor:pointer; transition:background .2s; white-space:nowrap; }
+    .btn-photo:hover { background:rgba(201,162,39,.2); }
+    .btn-photo-rm { padding:6px 11px; background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); border-radius:8px; color:#f87171; font-family:inherit; font-size:12px; cursor:pointer; }
+
+    /* PREVIEW BAR */
+    .preview-bar { margin-top:18px; padding:14px 18px; background:rgba(124,58,237,.08); border:1px solid rgba(124,58,237,.2); border-radius:12px; display:flex; align-items:center; justify-content:space-between; }
+    .preview-bar p { font-size:13px; color:var(--muted); }
+    .btn-preview { padding:9px 22px; background:rgba(124,58,237,.2); border:1px solid rgba(124,58,237,.4); border-radius:10px; color:#a78bfa; font-family:inherit; font-size:14px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; transition:background .2s; }
+    .btn-preview:hover { background:rgba(124,58,237,.35); }
+
+    /* PASSWORD */
+    .pwd-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; align-items:end; }
+
+    @media (max-width:700px) {
+      .content { padding:18px; }
+      .logo-grid { grid-template-columns:1fr; }
+      .pwd-grid { grid-template-columns:1fr; }
+      .top-bar { padding:14px 18px; }
+      .tabs { padding:0 14px; }
+      .theme-grid { grid-template-columns:1fr 1fr; }
+      .font-grid { grid-template-columns:1fr 1fr; }
+      .color-row { flex-wrap:wrap; }
     }
   </style>
 </head>
@@ -542,8 +175,7 @@
     <div class="login-icon">🔐</div>
     <h1 class="login-title">لوحة إدارة التخرج</h1>
     <p class="login-sub">أدخل كلمة المرور للدخول</p>
-    <input type="password" id="pwd-input" placeholder="••••••" maxlength="20"
-           onkeydown="if(event.key==='Enter') doLogin()">
+    <input type="password" id="pwd-input" placeholder="••••••" maxlength="20" onkeydown="if(event.key==='Enter') doLogin()">
     <button class="btn-login" onclick="doLogin()">دخول</button>
     <div class="login-error" id="login-error">كلمة المرور غير صحيحة</div>
   </div>
@@ -552,33 +184,21 @@
 <!-- ADMIN MAIN -->
 <div id="admin-main">
 
-  <!-- Top bar -->
   <div class="top-bar">
     <div class="top-bar-title">
       <span class="icon">🎓</span>
-      <div>
-        <h1>لوحة إدارة حفل التخرج</h1>
-        <p>تحكم كامل بالإعدادات والرسائل</p>
-      </div>
+      <div><h1>لوحة إدارة حفل التخرج</h1><p>تحكم كامل بكل شيء</p></div>
     </div>
     <button class="btn-logout" onclick="doLogout()">تسجيل الخروج</button>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('settings', this)">
-      ⚙️ إعدادات الحفل
-    </button>
-    <button class="tab-btn" onclick="switchTab('messages', this)">
-      💌 رسائل أولياء الأمور
-      <span class="tab-count" id="tab-msg-count">0</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab('password', this)">
-      🔑 كلمة المرور
-    </button>
+    <button class="tab-btn active"  onclick="switchTab('settings',this)">⚙️ إعدادات الحفل</button>
+    <button class="tab-btn"         onclick="switchTab('appearance',this)">🎨 المظهر والألوان</button>
+    <button class="tab-btn"         onclick="switchTab('messages',this)">💌 الرسائل <span class="tab-count" id="tab-msg-count">0</span></button>
+    <button class="tab-btn"         onclick="switchTab('password',this)">🔑 كلمة المرور</button>
   </div>
 
-  <!-- Content -->
   <div class="content">
 
     <!-- ══ SETTINGS TAB ══ -->
@@ -586,256 +206,342 @@
 
       <div class="section">
         <div class="section-title">🏫 معلومات المدرسة</div>
-        <div class="section-sub">هذه المعلومات ستظهر في شاشة العرض الرئيسية</div>
-
-        <div class="field-group">
-          <label>اسم المدرسة</label>
-          <input type="text" id="f-school-name" placeholder="مثال: الثانوية الثالثة عشرة بعرعر">
-        </div>
-
-        <div class="field-group">
-          <label>الدفعة / السنة</label>
-          <input type="text" id="f-batch" placeholder="مثال: دفعة الفخر والعطاء · ١٤٤٦ هـ">
-        </div>
-
-        <div class="field-group">
-          <label>عبارة شريط الأخبار (تظهر في الأعلى)</label>
-          <input type="text" id="f-ticker" placeholder="مثال: مبارك للخريجات العزيزات">
-        </div>
+        <div class="section-sub">تظهر في شاشة العرض الرئيسية</div>
+        <div class="field-group"><label>اسم المدرسة</label><input type="text" id="f-school-name" placeholder="مثال: الثانوية الثالثة عشرة بعرعر"></div>
+        <div class="field-group"><label>الدفعة / السنة</label><input type="text" id="f-batch" placeholder="مثال: دفعة الفخر والعطاء · ١٤٤٧ هـ"></div>
+        <div class="field-group"><label>عبارة شريط الأخبار</label><input type="text" id="f-ticker" placeholder="مثال: مبارك للخريجات العزيزات"></div>
       </div>
 
       <div class="section">
         <div class="section-title">🖼️ الشعارات</div>
-        <div class="section-sub">ارفع صور الشعارات — يُفضّل PNG بخلفية شفافة</div>
-
+        <div class="section-sub">يُفضّل PNG بخلفية شفافة</div>
         <div class="logo-grid">
-          <!-- Ministry logo -->
           <div class="logo-upload-box" onclick="document.getElementById('f-ministry-file').click()">
-            <input type="file" id="f-ministry-file" accept="image/*"
-                   onchange="handleLogoUpload(this, 'ministry')">
-            <div id="ministry-preview-wrap">
-              <div class="logo-placeholder">🏛</div>
-            </div>
+            <input type="file" id="f-ministry-file" accept="image/*" onchange="handleLogoUpload(this,'ministry')">
+            <div id="ministry-preview-wrap"><div class="logo-placeholder">🏛</div></div>
             <div class="logo-upload-label">شعار وزارة التعليم</div>
             <div class="logo-upload-hint">اضغط لاختيار الصورة</div>
           </div>
-
-          <!-- School logo -->
           <div class="logo-upload-box" onclick="document.getElementById('f-school-file').click()">
-            <input type="file" id="f-school-file" accept="image/*"
-                   onchange="handleLogoUpload(this, 'school')">
-            <div id="school-preview-wrap">
-              <div class="logo-placeholder">🎓</div>
-            </div>
+            <input type="file" id="f-school-file" accept="image/*" onchange="handleLogoUpload(this,'school')">
+            <div id="school-preview-wrap"><div class="logo-placeholder">🎓</div></div>
             <div class="logo-upload-label">شعار المدرسة</div>
             <div class="logo-upload-hint">اضغط لاختيار الصورة</div>
           </div>
         </div>
       </div>
 
-      <button class="btn-save" onclick="saveSettings()">💾 حفظ الإعدادات</button>
-      <div class="save-confirm" id="settings-confirm">✅ تم الحفظ بنجاح! ستظهر التغييرات في شاشة العرض فوراً.</div>
+      <div class="section">
+        <div class="section-title">🎓 صورة الخريجة الافتراضية</div>
+        <div class="section-sub">تظهر على البطاقات التي لا تحتوي صورة خاصة بالطالبة</div>
+        <div class="logo-upload-box" style="max-width:260px" onclick="document.getElementById('f-default-photo').click()">
+          <input type="file" id="f-default-photo" accept="image/*" onchange="handleDefaultPhotoUpload(this)">
+          <div id="default-photo-wrap"><div class="logo-placeholder" style="width:100px;height:100px;font-size:40px;">👩‍🎓</div></div>
+          <div class="logo-upload-label">صورة الخريجة الافتراضية</div>
+          <div class="logo-upload-hint">اضغط لاختيار صورة</div>
+        </div>
+      </div>
 
-      <div class="preview-bar" style="margin-top:28px">
-        <p>عرض شاشة البلازما الرئيسية</p>
+      <button class="btn-save" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+      <div class="save-confirm" id="settings-confirm">✅ تم الحفظ! التغييرات ستظهر فوراً على الشاشة.</div>
+
+      <div class="preview-bar" style="margin-top:24px">
+        <p>فتح شاشة العرض الرئيسية</p>
         <a href="index.html" target="_blank" class="btn-preview">فتح شاشة العرض ←</a>
       </div>
 
-    </div><!-- /settings tab -->
+    </div><!-- /settings -->
+
+    <!-- ══ APPEARANCE TAB ══ -->
+    <div class="tab-panel" id="tab-appearance">
+
+      <!-- THEMES -->
+      <div class="section">
+        <div class="section-title">🎨 الثيم والألوان</div>
+        <div class="section-sub">اختر ثيم جاهز أو خصص الألوان بنفسك</div>
+        <div class="theme-grid" id="theme-grid"></div>
+        <button class="btn-save" onclick="saveAppearance()">💾 تطبيق المظهر</button>
+        <div class="save-confirm" id="appear-confirm">✅ تم تطبيق المظهر على الشاشة!</div>
+      </div>
+
+      <!-- CUSTOM COLORS -->
+      <div class="section">
+        <div class="section-title">🖌️ تخصيص الألوان</div>
+        <div class="section-sub">الوان مخصصة تُضاف فوق الثيم المختار</div>
+        <div class="color-row">
+          <label>اللون الأساسي</label>
+          <input type="color" id="custom-primary" value="#c9a227">
+          <span class="color-hint">الذهب، العناوين، الحدود، الشارة</span>
+        </div>
+        <div class="color-row">
+          <label>لون الإضاءة</label>
+          <input type="color" id="custom-accent" value="#7c3aed">
+          <span class="color-hint">الزر الطائر، الأورا، التدرجات</span>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--muted);">💡 اضغط "تطبيق المظهر" بعد اختيار الألوان</div>
+      </div>
+
+      <!-- FONTS -->
+      <div class="section">
+        <div class="section-title">🔤 الخط</div>
+        <div class="section-sub">اختر خط العرض المناسب للمناسبة</div>
+        <div class="font-grid">
+          <div>
+            <input type="radio" name="font-pick" id="f-Tajawal"          value="Tajawal"             class="font-option">
+            <label for="f-Tajawal" class="font-label"><span class="font-name">Tajawal — عصري</span><span class="font-sample" style="font-family:'Tajawal'">خريجة ١٤٤٧</span></label>
+          </div>
+          <div>
+            <input type="radio" name="font-pick" id="f-Amiri"            value="Amiri"               class="font-option">
+            <label for="f-Amiri" class="font-label"><span class="font-name">Amiri — كلاسيكي</span><span class="font-sample" style="font-family:'Amiri'">خريجة ١٤٤٧</span></label>
+          </div>
+          <div>
+            <input type="radio" name="font-pick" id="f-Cairo"            value="Cairo"               class="font-option">
+            <label for="f-Cairo" class="font-label"><span class="font-name">Cairo — أنيق</span><span class="font-sample" style="font-family:'Cairo'">خريجة ١٤٤٧</span></label>
+          </div>
+          <div>
+            <input type="radio" name="font-pick" id="f-Almarai"          value="Almarai"             class="font-option">
+            <label for="f-Almarai" class="font-label"><span class="font-name">Almarai — راقي</span><span class="font-sample" style="font-family:'Almarai'">خريجة ١٤٤٧</span></label>
+          </div>
+          <div>
+            <input type="radio" name="font-pick" id="f-NotoNaskh"        value="Noto Naskh Arabic"   class="font-option">
+            <label for="f-NotoNaskh" class="font-label"><span class="font-name">نسخ — تقليدي</span><span class="font-sample" style="font-family:'Noto Naskh Arabic'">خريجة ١٤٤٧</span></label>
+          </div>
+        </div>
+        <button class="btn-save" onclick="saveAppearance()">💾 تطبيق الخط</button>
+      </div>
+
+    </div><!-- /appearance -->
 
     <!-- ══ MESSAGES TAB ══ -->
     <div class="tab-panel" id="tab-messages">
-
       <div class="section">
         <div class="msg-count-bar">
-          <h3>جميع الرسائل المستلمة (<span id="msg-total">0</span>)</h3>
+          <h3>جميع الرسائل (<span id="msg-total">0</span>)</h3>
           <button class="btn-clear-all" onclick="clearAllMessages()">🗑 حذف الكل</button>
         </div>
-
         <div id="messages-list">
-          <div class="msg-empty">
-            <div class="empty-icon">💌</div>
-            <p>لا توجد رسائل بعد</p>
-          </div>
+          <div class="msg-empty"><div class="empty-icon">💌</div><p>لا توجد رسائل بعد</p></div>
         </div>
       </div>
-
-    </div><!-- /messages tab -->
+    </div><!-- /messages -->
 
     <!-- ══ PASSWORD TAB ══ -->
     <div class="tab-panel" id="tab-password">
-
       <div class="section">
         <div class="section-title">🔑 تغيير كلمة المرور</div>
-        <div class="section-sub">كلمة المرور الافتراضية هي: 1446</div>
-
+        <div class="section-sub">كلمة المرور الافتراضية: 1446</div>
         <div class="pwd-grid">
-          <div class="field-group" style="margin-bottom:0">
-            <label>كلمة المرور الحالية</label>
-            <input type="password" id="old-pwd" placeholder="••••">
-          </div>
-          <div class="field-group" style="margin-bottom:0">
-            <label>كلمة المرور الجديدة</label>
-            <input type="password" id="new-pwd" placeholder="••••">
-          </div>
-          <div>
-            <button class="btn-save" onclick="changePwd()" style="width:100%; padding:13px;">تغيير</button>
-          </div>
+          <div class="field-group" style="margin-bottom:0"><label>الحالية</label><input type="password" id="old-pwd" placeholder="••••"></div>
+          <div class="field-group" style="margin-bottom:0"><label>الجديدة</label><input type="password" id="new-pwd" placeholder="••••"></div>
+          <div><button class="btn-save" onclick="changePwd()" style="width:100%;padding:13px;">تغيير</button></div>
         </div>
-        <div class="save-confirm" id="pwd-confirm">✅ تم تغيير كلمة المرور بنجاح!</div>
-        <div class="login-error" id="pwd-error" style="display:none; margin-top:12px;">كلمة المرور الحالية غير صحيحة</div>
+        <div class="save-confirm" id="pwd-confirm">✅ تم التغيير!</div>
+        <div class="login-error" id="pwd-error" style="display:none;margin-top:12px;">كلمة المرور الحالية خاطئة</div>
       </div>
-
-    </div><!-- /password tab -->
+    </div><!-- /password -->
 
   </div><!-- /content -->
 </div><!-- /admin-main -->
 
 <script>
-/* ═══════════════════════════════════════
-   AUTH
-═══════════════════════════════════════ */
-const DEFAULT_PWD = '1446';
+/* ═══ THEME DEFINITIONS ═══ */
+const THEMES = {
+  'gold-dark':    { label:'الذهبي الداكن',   emoji:'🌑', colors:['#0f0820','#c9a227','#7c3aed'] },
+  'cream-gold':   { label:'الكريمي الذهبي',  emoji:'☀️', colors:['#fefaf2','#c9a227','#b45309'] },
+  'rose-royal':   { label:'الوردي الملكي',   emoji:'🌹', colors:['#1a0515','#f472b6','#be185d'] },
+  'royal-purple': { label:'البنفسجي الملكي', emoji:'💜', colors:['#0e0520','#a78bfa','#6d28d9'] },
+  'emerald':      { label:'الزمرد الملكي',   emoji:'💚', colors:['#042015','#34d399','#047857'] },
+  'midnight-blue':{ label:'الأزرق الليلي',   emoji:'🌊', colors:['#020c1e','#22d3ee','#0e7490'] },
+  'sunset':       { label:'غروب الذهب',      emoji:'🌅', colors:['#1c0d00','#fb923c','#b45309'] },
+  'silver-white': { label:'الفضي النقي',     emoji:'🤍', colors:['#f8f9fa','#c9a227','#374151'] },
+};
 
-function getPassword() {
-  return localStorage.getItem('grad_admin_pwd') || DEFAULT_PWD;
+/* ═══ BUILD THEME GRID ═══ */
+function buildThemeGrid(selectedId) {
+  const grid = document.getElementById('theme-grid');
+  grid.innerHTML = Object.entries(THEMES).map(([id, t]) => `
+    <div class="theme-card ${id===selectedId?'selected':''}" id="tc-${id}" onclick="selectTheme('${id}')">
+      <div class="theme-preview">
+        ${t.colors.map(c=>`<div class="theme-swatch" style="background:${c}"></div>`).join('')}
+      </div>
+      <div class="theme-name">${t.emoji} ${t.label}</div>
+      <div class="theme-check">✓</div>
+    </div>`).join('');
 }
+
+let _selectedTheme = 'gold-dark';
+function selectTheme(id) {
+  _selectedTheme = id;
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
+  const el = document.getElementById('tc-'+id);
+  if(el) el.classList.add('selected');
+}
+
+/* ═══ AUTH ═══ */
+const DEFAULT_PWD = '1446';
+function getPassword() { return localStorage.getItem('grad_admin_pwd') || DEFAULT_PWD; }
 
 function doLogin() {
   const val = document.getElementById('pwd-input').value;
-  if (val === getPassword()) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-main').style.display = 'block';
+  if(val === getPassword()) {
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-main').style.display='block';
     loadAll();
   } else {
-    document.getElementById('login-error').style.display = 'block';
-    document.getElementById('pwd-input').value = '';
+    document.getElementById('login-error').style.display='block';
+    document.getElementById('pwd-input').value='';
     document.getElementById('pwd-input').focus();
   }
 }
-
 function doLogout() {
-  document.getElementById('admin-main').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('pwd-input').value = '';
-  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('admin-main').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pwd-input').value='';
+  document.getElementById('login-error').style.display='none';
 }
-
 function changePwd() {
-  const old = document.getElementById('old-pwd').value;
-  const nw  = document.getElementById('new-pwd').value;
-  if (old !== getPassword()) {
-    document.getElementById('pwd-error').style.display = 'block';
-    document.getElementById('pwd-confirm').style.display = 'none';
-    return;
-  }
-  if (!nw || nw.length < 3) { alert('كلمة المرور قصيرة جداً'); return; }
-  localStorage.setItem('grad_admin_pwd', nw);
-  document.getElementById('pwd-error').style.display = 'none';
-  document.getElementById('pwd-confirm').style.display = 'block';
-  document.getElementById('old-pwd').value = '';
-  document.getElementById('new-pwd').value = '';
+  const old=document.getElementById('old-pwd').value;
+  const nw=document.getElementById('new-pwd').value;
+  if(old!==getPassword()){ document.getElementById('pwd-error').style.display='block'; document.getElementById('pwd-confirm').style.display='none'; return; }
+  if(!nw||nw.length<3){ alert('كلمة المرور قصيرة جداً'); return; }
+  localStorage.setItem('grad_admin_pwd',nw);
+  document.getElementById('pwd-error').style.display='none';
+  document.getElementById('pwd-confirm').style.display='block';
+  document.getElementById('old-pwd').value=''; document.getElementById('new-pwd').value='';
 }
 
-/* ═══════════════════════════════════════
-   TABS
-═══════════════════════════════════════ */
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+/* ═══ TABS ═══ */
+function switchTab(name,btn) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'messages') renderMessages();
+  if(name==='messages') renderMessages();
 }
 
-/* ═══════════════════════════════════════
-   SETTINGS
-═══════════════════════════════════════ */
-const logoData = { ministry: null, school: null };
+/* ═══ LOAD ALL ═══ */
+const logoData = { ministry:null, school:null };
+let defaultPhoto = null;
 
 function loadAll() {
-  const s = JSON.parse(localStorage.getItem('grad_settings') || '{}');
+  const s = JSON.parse(localStorage.getItem('grad_settings')||'{}');
   document.getElementById('f-school-name').value = s.schoolName || '';
   document.getElementById('f-batch').value        = s.batch      || '';
   document.getElementById('f-ticker').value       = s.ticker     || '';
 
-  if (s.ministryLogo) showLogoPreview('ministry', s.ministryLogo);
-  if (s.schoolLogo)   showLogoPreview('school',   s.schoolLogo);
+  if(s.ministryLogo) { showLogoPreview('ministry',s.ministryLogo); logoData.ministry=s.ministryLogo; }
+  if(s.schoolLogo)   { showLogoPreview('school',  s.schoolLogo);   logoData.school  =s.schoolLogo; }
+  if(s.gradDefaultPhoto) { showDefaultPhotoPreview(s.gradDefaultPhoto); defaultPhoto=s.gradDefaultPhoto; }
 
-  logoData.ministry = s.ministryLogo || null;
-  logoData.school   = s.schoolLogo   || null;
+  // Theme
+  _selectedTheme = s.theme || 'gold-dark';
+  buildThemeGrid(_selectedTheme);
+
+  // Font
+  const font = s.font || 'Tajawal';
+  const fontRadio = document.getElementById('f-'+font.replace(' ',''));
+  if(fontRadio) fontRadio.checked = true;
+  else document.getElementById('f-Tajawal').checked = true;
+
+  // Custom colors
+  if(s.customPrimary) document.getElementById('custom-primary').value = s.customPrimary;
+  if(s.customAccent)  document.getElementById('custom-accent').value  = s.customAccent;
 
   renderMessages();
 }
 
-function handleLogoUpload(input, type) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    logoData[type] = e.target.result;
-    showLogoPreview(type, e.target.result);
-  };
+/* ═══ LOGO UPLOAD ═══ */
+function handleLogoUpload(input,type) {
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{ logoData[type]=e.target.result; showLogoPreview(type,e.target.result); };
   reader.readAsDataURL(file);
 }
-
-function showLogoPreview(type, src) {
-  const wrap = document.getElementById(type + '-preview-wrap');
-  wrap.innerHTML = `<img class="logo-preview" src="${src}" alt="${type} logo">`;
+function showLogoPreview(type,src) {
+  document.getElementById(type+'-preview-wrap').innerHTML=`<img class="logo-preview" src="${src}">`;
 }
 
+/* ═══ DEFAULT PHOTO ═══ */
+function handleDefaultPhotoUpload(input) {
+  const file=input.files[0]; if(!file) return;
+  if(file.size>3*1024*1024){ alert('الصورة كبيرة جداً (الحد الأقصى 3 ميجا)'); return; }
+  const reader=new FileReader();
+  reader.onload=e=>{ defaultPhoto=e.target.result; showDefaultPhotoPreview(e.target.result); };
+  reader.readAsDataURL(file);
+}
+function showDefaultPhotoPreview(src) {
+  document.getElementById('default-photo-wrap').innerHTML=`<img class="grad-photo-preview" src="${src}">`;
+}
+
+/* ═══ SAVE SETTINGS ═══ */
 function saveSettings() {
+  const existing = JSON.parse(localStorage.getItem('grad_settings')||'{}');
   const s = {
+    ...existing,
     schoolName:   document.getElementById('f-school-name').value.trim(),
     batch:        document.getElementById('f-batch').value.trim(),
     ticker:       document.getElementById('f-ticker').value.trim(),
     ministryLogo: logoData.ministry,
     schoolLogo:   logoData.school,
-    savedAt:      Date.now()
+    gradDefaultPhoto: defaultPhoto,
+    savedAt: Date.now()
   };
-  localStorage.setItem('grad_settings', JSON.stringify(s));
-  const c = document.getElementById('settings-confirm');
-  c.style.display = 'block';
-  setTimeout(() => c.style.display = 'none', 4000);
+  localStorage.setItem('grad_settings',JSON.stringify(s));
+  flashConfirm('settings-confirm');
 }
 
-/* ═══════════════════════════════════════
-   MESSAGES
-═══════════════════════════════════════ */
-function getMessages() {
-  return JSON.parse(localStorage.getItem('grad_messages') || '[]');
+/* ═══ SAVE APPEARANCE ═══ */
+function saveAppearance() {
+  const existing = JSON.parse(localStorage.getItem('grad_settings')||'{}');
+  const fontRadio = document.querySelector('input[name="font-pick"]:checked');
+  const font = fontRadio ? fontRadio.value : 'Tajawal';
+  const s = {
+    ...existing,
+    theme:         _selectedTheme,
+    font:          font,
+    customPrimary: document.getElementById('custom-primary').value,
+    customAccent:  document.getElementById('custom-accent').value,
+    savedAt:       Date.now()
+  };
+  localStorage.setItem('grad_settings',JSON.stringify(s));
+  flashConfirm('appear-confirm');
 }
 
-function saveMessages(msgs) {
-  localStorage.setItem('grad_messages', JSON.stringify(msgs));
+function flashConfirm(id) {
+  const el = document.getElementById(id);
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none', 4000);
 }
+
+/* ═══ MESSAGES ═══ */
+function getMessages() { return JSON.parse(localStorage.getItem('grad_messages')||'[]'); }
+function saveMessages(msgs) { localStorage.setItem('grad_messages',JSON.stringify(msgs)); }
 
 function renderMessages() {
   const msgs = getMessages();
-  document.getElementById('msg-total').textContent   = msgs.length;
+  document.getElementById('msg-total').textContent     = msgs.length;
   document.getElementById('tab-msg-count').textContent = msgs.length;
-
   const list = document.getElementById('messages-list');
 
-  if (msgs.length === 0) {
-    list.innerHTML = `
-      <div class="msg-empty">
-        <div class="empty-icon">💌</div>
-        <p>لا توجد رسائل بعد — ستظهر هنا فور إرسالها</p>
-      </div>`;
+  if(!msgs.length) {
+    list.innerHTML=`<div class="msg-empty"><div class="empty-icon">💌</div><p>لا توجد رسائل بعد</p></div>`;
     return;
   }
 
-  const colors = ['#7c3aed','#0e7490','#be185d','#b45309','#065f46','#4338ca'];
+  const colors=['#7c3aed','#0e7490','#be185d','#b45309','#065f46','#4338ca'];
+  list.innerHTML = msgs.map((m,i)=>{
+    const color  = colors[i%colors.length];
+    const isActive = m.active!==false;
+    const time   = new Date(m.createdAt).toLocaleString('ar-SA');
+    const hasPhoto = !!m.photo;
+    const avatarContent = hasPhoto
+      ? `<img src="${m.photo}" alt="${m.studentName}">`
+      : (m.studentName?m.studentName[0]:'؟');
 
-  list.innerHTML = msgs.map((m, i) => {
-    const color = colors[i % colors.length];
-    const initial = m.studentName ? m.studentName[0] : '؟';
-    const time = new Date(m.createdAt).toLocaleString('ar-SA');
-    const isActive = m.active !== false;
     return `
-      <div class="msg-card ${isActive ? '' : 'inactive'}" id="mc${m.id}">
-        <div class="msg-avatar" style="background:linear-gradient(135deg,${color}cc,${color})">${initial}</div>
+    <div class="msg-card ${isActive?'':'inactive'}" id="mc-${m.id}">
+      <div class="msg-card-top">
+        <div class="msg-avatar" style="${hasPhoto?'':'background:linear-gradient(135deg,'+color+'cc,'+color+')'}">${avatarContent}</div>
         <div class="msg-body">
           <div class="msg-names">
             <span class="msg-student">${m.studentName}</span>
@@ -846,40 +552,56 @@ function renderMessages() {
           <div class="msg-time">${time}</div>
         </div>
         <div class="msg-actions">
-          <button class="btn-toggle ${isActive ? 'active-state' : 'inactive-state'}"
-                  onclick="toggleMsg('${m.id}')">
-            ${isActive ? '✅ ظاهرة' : '⏸ مخفية'}
-          </button>
+          <button class="btn-toggle ${isActive?'active-state':'inactive-state'}" onclick="toggleMsg('${m.id}')">${isActive?'✅ ظاهرة':'⏸ مخفية'}</button>
           <button class="btn-delete" onclick="deleteMsg('${m.id}')">🗑 حذف</button>
         </div>
-      </div>`;
+      </div>
+      <!-- PHOTO ROW -->
+      <div class="msg-photo-row">
+        <div class="msg-photo-thumb" id="photo-thumb-${m.id}">
+          ${hasPhoto ? `<img src="${m.photo}">` : '<span>لا توجد<br>صورة</span>'}
+        </div>
+        <input type="file" id="photo-file-${m.id}" accept="image/*" style="display:none" onchange="handleMsgPhoto(this,'${m.id}')">
+        <button class="btn-photo" onclick="document.getElementById('photo-file-${m.id}').click()">📸 ${hasPhoto?'تغيير':'رفع'} صورة الخريجة</button>
+        ${hasPhoto ? `<button class="btn-photo-rm" onclick="removeMsgPhoto('${m.id}')">✕ حذف</button>` : ''}
+      </div>
+    </div>`;
   }).join('');
 }
 
-function toggleMsg(id) {
+/* ═══ PHOTO PER MESSAGE ═══ */
+function handleMsgPhoto(input, id) {
+  const file = input.files[0]; if(!file) return;
+  if(file.size > 3*1024*1024) { alert('الصورة كبيرة جداً (الحد الأقصى 3 ميجا)'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const msgs = getMessages();
+    const m = msgs.find(x=>x.id===id);
+    if(m) { m.photo = e.target.result; saveMessages(msgs); renderMessages(); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeMsgPhoto(id) {
   const msgs = getMessages();
-  const m = msgs.find(x => x.id === id);
-  if (m) { m.active = !m.active; saveMessages(msgs); renderMessages(); }
+  const m = msgs.find(x=>x.id===id);
+  if(m) { delete m.photo; saveMessages(msgs); renderMessages(); }
 }
 
+function toggleMsg(id) {
+  const msgs=getMessages(); const m=msgs.find(x=>x.id===id);
+  if(m){ m.active=!m.active; saveMessages(msgs); renderMessages(); }
+}
 function deleteMsg(id) {
-  if (!confirm('حذف هذه الرسالة نهائياً؟')) return;
-  saveMessages(getMessages().filter(x => x.id !== id));
-  renderMessages();
+  if(!confirm('حذف هذه الرسالة نهائياً؟')) return;
+  saveMessages(getMessages().filter(x=>x.id!==id)); renderMessages();
 }
-
 function clearAllMessages() {
-  if (!confirm('حذف جميع الرسائل نهائياً؟')) return;
-  localStorage.removeItem('grad_messages');
-  renderMessages();
+  if(!confirm('حذف جميع الرسائل نهائياً؟')) return;
+  localStorage.removeItem('grad_messages'); renderMessages();
 }
 
-// Auto-refresh messages every 10s
-setInterval(() => {
-  if (document.getElementById('tab-messages').classList.contains('active')) {
-    renderMessages();
-  }
-}, 10000);
+setInterval(()=>{ if(document.getElementById('tab-messages').classList.contains('active')) renderMessages(); },10000);
 </script>
 </body>
 </html>
