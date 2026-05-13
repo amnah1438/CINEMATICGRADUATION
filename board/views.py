@@ -137,3 +137,24 @@ def api_message_delete_all(request):
         return JsonResponse({'error': 'unauthorized'}, status=403)
     GraduateMessage.objects.all().delete()
     return JsonResponse({'ok': True})
+
+
+# ═══ API: LOGO / PHOTO UPLOAD ═══
+@csrf_exempt
+def api_upload(request):
+    if not _panel_authed(request):
+        return JsonResponse({'error': 'unauthorized'}, status=403)
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST only'}, status=405)
+    field = request.POST.get('field')  # ministry_logo | school_logo | default_grad_photo
+    allowed = ['ministry_logo', 'school_logo', 'default_grad_photo']
+    if field not in allowed:
+        return JsonResponse({'error': 'invalid field'}, status=400)
+    file = request.FILES.get('file')
+    if not file:
+        return JsonResponse({'error': 'no file'}, status=400)
+    settings, _ = GraduationSettings.objects.get_or_create(pk=1)
+    setattr(settings, field, file)
+    settings.save()
+    url = getattr(settings, field).url if getattr(settings, field) else ''
+    return JsonResponse({'ok': True, 'url': url})

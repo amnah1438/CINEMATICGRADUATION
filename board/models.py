@@ -52,6 +52,11 @@ class GraduationSettings(models.Model):
         max_length=100, default='1446',
         verbose_name="كلمة مرور لوحة الإدارة"
     )
+    default_grad_photo = CloudinaryField(
+        'صورة الخريجة الافتراضية',
+        folder='graduation/graduates',
+        blank=True, null=True,
+    )
 
     class Meta:
         verbose_name = "إعدادات الحفل"

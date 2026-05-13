@@ -85,6 +85,20 @@
     .color-row input[type="color"]{width:52px;height:36px;border:1.5px solid rgba(255,255,255,.2);border-radius:8px;cursor:pointer;padding:2px;background:none;}
     .color-row .color-hint{font-size:12px;color:var(--muted);}
 
+    /* LOGO UPLOAD */
+    .logo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:500px){.logo-grid{grid-template-columns:1fr;}}
+    .logo-upload-box{border:2px dashed rgba(201,162,39,.25);border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:all .25s;position:relative;}
+    .logo-upload-box:hover{border-color:rgba(201,162,39,.5);background:rgba(201,162,39,.04);}
+    .logo-upload-box input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:none;background:none;}
+    .logo-preview-img{width:80px;height:80px;border-radius:50%;object-fit:contain;margin:0 auto 10px;display:block;border:2px solid var(--border);}
+    .logo-placeholder{width:80px;height:80px;border-radius:50%;background:rgba(201,162,39,.08);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 10px;}
+    .logo-upload-label{font-size:14px;font-weight:600;color:#fff;margin-bottom:4px;}
+    .logo-upload-hint{font-size:12px;color:var(--muted);}
+    .upload-status{font-size:12px;margin-top:6px;min-height:18px;color:var(--gold);}
+    .grad-photo-box{max-width:240px;}
+    .grad-photo-preview{width:100px;height:100px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;border:3px solid var(--gold);}
+
     /* MESSAGES */
     .msg-count-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
     .msg-count-bar h3{font-size:16px;font-weight:600;color:#fff;}
@@ -180,6 +194,57 @@
       <div class="field-group"><label>مدة عرض كل بطاقة (ثانية)</label><input type="number" id="f-speed" min="4" max="30" value="{{ settings.card_speed|default:9 }}"></div>
       <button class="btn-save" onclick="saveSettings()">💾 حفظ الإعدادات</button>
       <div class="save-confirm" id="settings-confirm">✅ تم الحفظ! التغييرات ستظهر على الشاشة.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🖼️ الشعارات</div>
+      <div class="section-sub">يُفضّل PNG بخلفية شفافة — تُرفع مباشرة على الشاشة</div>
+      <div class="logo-grid">
+        <div class="logo-upload-box" onclick="document.getElementById('inp-ministry').click()">
+          <input type="file" id="inp-ministry" accept="image/*" onchange="uploadLogo(this,'ministry_logo','prev-ministry','status-ministry')">
+          <div id="prev-ministry">
+            {% if settings and settings.ministry_logo %}
+              <img class="logo-preview-img" src="{{ settings.ministry_logo.url }}">
+            {% else %}
+              <div class="logo-placeholder">🏛</div>
+            {% endif %}
+          </div>
+          <div class="logo-upload-label">شعار وزارة التعليم</div>
+          <div class="logo-upload-hint">اضغطي لاختيار الصورة</div>
+          <div class="upload-status" id="status-ministry"></div>
+        </div>
+        <div class="logo-upload-box" onclick="document.getElementById('inp-school').click()">
+          <input type="file" id="inp-school" accept="image/*" onchange="uploadLogo(this,'school_logo','prev-school','status-school')">
+          <div id="prev-school">
+            {% if settings and settings.school_logo %}
+              <img class="logo-preview-img" src="{{ settings.school_logo.url }}">
+            {% else %}
+              <div class="logo-placeholder">🎓</div>
+            {% endif %}
+          </div>
+          <div class="logo-upload-label">شعار المدرسة</div>
+          <div class="logo-upload-hint">اضغطي لاختيار الصورة</div>
+          <div class="upload-status" id="status-school"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">👩‍🎓 صورة الخريجة الافتراضية</div>
+      <div class="section-sub">تظهر على البطاقات التي لا تحتوي صورة خاصة</div>
+      <div class="logo-upload-box grad-photo-box" onclick="document.getElementById('inp-grad').click()">
+        <input type="file" id="inp-grad" accept="image/*" onchange="uploadLogo(this,'default_grad_photo','prev-grad','status-grad')">
+        <div id="prev-grad">
+          {% if settings and settings.default_grad_photo %}
+            <img class="grad-photo-preview" src="{{ settings.default_grad_photo.url }}">
+          {% else %}
+            <div class="logo-placeholder" style="width:100px;height:100px;font-size:40px;margin:0 auto 10px">👩‍🎓</div>
+          {% endif %}
+        </div>
+        <div class="logo-upload-label">صورة الخريجة الافتراضية</div>
+        <div class="logo-upload-hint">اضغطي لاختيار صورة</div>
+        <div class="upload-status" id="status-grad"></div>
+      </div>
     </div>
     <div class="preview-bar">
       <p>فتح شاشة العرض الرئيسية</p>
@@ -330,6 +395,32 @@ async function post(url, data) {
   return r.json();
 }
 function flash(id) { const el=document.getElementById(id); el.style.display='block'; setTimeout(()=>el.style.display='none',4000); }
+
+/* ── UPLOAD LOGO / PHOTO ── */
+async function uploadLogo(input, field, previewId, statusId) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById(statusId);
+  statusEl.textContent = '⏳ جاري الرفع...';
+  const fd = new FormData();
+  fd.append('field', field);
+  fd.append('file', file);
+  try {
+    const r = await fetch('/api/upload/', {method:'POST', body:fd});
+    const data = await r.json();
+    if (data.ok) {
+      const isGrad = field === 'default_grad_photo';
+      document.getElementById(previewId).innerHTML =
+        `<img class="${isGrad?'grad-photo-preview':'logo-preview-img'}" src="${data.url}">`;
+      statusEl.textContent = '✅ تم الرفع!';
+      setTimeout(()=>statusEl.textContent='', 3000);
+    } else {
+      statusEl.textContent = '❌ فشل الرفع';
+    }
+  } catch(e) {
+    statusEl.textContent = '❌ خطأ في الاتصال';
+  }
+}
 
 /* ── SAVE SETTINGS ── */
 async function saveSettings() {

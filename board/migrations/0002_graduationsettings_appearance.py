@@ -33,4 +33,9 @@ class Migration(migrations.Migration):
             name='panel_password',
             field=models.CharField(default='1446', max_length=100, verbose_name='كلمة مرور لوحة الإدارة'),
         ),
+        migrations.AddField(
+            model_name='graduationsettings',
+            name='default_grad_photo',
+            field=__import__('cloudinary').models.CloudinaryField('صورة الخريجة الافتراضية', blank=True, folder='graduation/graduates', null=True),
+        ),
     ]
