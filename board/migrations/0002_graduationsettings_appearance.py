@@ -35,6 +35,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='graduationsettings',
+            name='font_size',
+            field=models.PositiveIntegerField(default=100, verbose_name='حجم الخط (٨٠–١٨٠)'),
+        ),
+        migrations.AddField(
+            model_name='graduationsettings',
             name='default_grad_photo',
             field=__import__('cloudinary').models.CloudinaryField('صورة الخريجة الافتراضية', blank=True, folder='graduation/graduates', null=True),
         ),

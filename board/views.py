@@ -70,7 +70,7 @@ def api_settings(request):
     settings, _ = GraduationSettings.objects.get_or_create(pk=1)
     if request.method == 'POST':
         data = json.loads(request.body)
-        for field in ['school_name','batch','ticker_text','card_speed','theme','font','custom_primary','custom_accent']:
+        for field in ['school_name','batch','ticker_text','card_speed','theme','font','custom_primary','custom_accent','font_size']:
             if field in data:
                 setattr(settings, field, data[field])
         settings.save()
@@ -84,6 +84,7 @@ def api_settings(request):
         'font':           settings.font,
         'custom_primary': settings.custom_primary,
         'custom_accent':  settings.custom_accent,
+        'font_size':      settings.font_size,
     })
 
 

@@ -52,6 +52,10 @@ class GraduationSettings(models.Model):
         max_length=100, default='1446',
         verbose_name="كلمة مرور لوحة الإدارة"
     )
+    font_size = models.PositiveIntegerField(
+        default=100,
+        verbose_name="حجم الخط (٨٠–١٨٠)"
+    )
     default_grad_photo = CloudinaryField(
         'صورة الخريجة الافتراضية',
         folder='graduation/graduates',

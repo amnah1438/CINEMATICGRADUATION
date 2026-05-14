@@ -192,6 +192,7 @@
       <div class="field-group"><label>الدفعة / السنة</label><input type="text" id="f-batch" value="{{ settings.batch|default:'' }}"></div>
       <div class="field-group"><label>عبارة شريط الأخبار</label><input type="text" id="f-ticker" value="{{ settings.ticker_text|default:'' }}"></div>
       <div class="field-group"><label>مدة عرض كل بطاقة (ثانية)</label><input type="number" id="f-speed" min="4" max="30" value="{{ settings.card_speed|default:9 }}"></div>
+      <div class="field-group"><label>حجم الخط على شاشة العرض (٨٠ – ١٨٠)</label><input type="number" id="f-fontsize" min="80" max="180" value="{{ settings.font_size|default:100 }}" style="max-width:160px"></div>
       <button class="btn-save" onclick="saveSettings()">💾 حفظ الإعدادات</button>
       <div class="save-confirm" id="settings-confirm">✅ تم الحفظ! التغييرات ستظهر على الشاشة.</div>
     </div>
@@ -429,6 +430,7 @@ async function saveSettings() {
     batch:        document.getElementById('f-batch').value.trim(),
     ticker_text:  document.getElementById('f-ticker').value.trim(),
     card_speed:   parseInt(document.getElementById('f-speed').value)||9,
+    font_size:    parseInt(document.getElementById('f-fontsize').value)||100,
   });
   flash('settings-confirm');
 }
