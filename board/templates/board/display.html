@@ -60,12 +60,12 @@
     #stars-canvas{z-index:2;}#confetti-canvas{z-index:100;}
 
     .rays-wrap{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100vw;height:50vh;overflow:hidden;z-index:3;pointer-events:none;}
-    .ray{position:absolute;bottom:0;left:50%;width:1px;height:50vh;background:linear-gradient(to top,transparent,var(--ray-color),transparent);transform-origin:bottom center;animation:rayPulse 9s ease-in-out infinite;}
-    .ray:nth-child(1){transform:rotate(-55deg);animation-delay:0s}.ray:nth-child(2){transform:rotate(-38deg);animation-delay:.9s}
-    .ray:nth-child(3){transform:rotate(-21deg);animation-delay:1.8s}.ray:nth-child(4){transform:rotate(-4deg);animation-delay:2.7s}
-    .ray:nth-child(5){transform:rotate(13deg);animation-delay:3.6s}.ray:nth-child(6){transform:rotate(30deg);animation-delay:4.5s}
-    .ray:nth-child(7){transform:rotate(47deg);animation-delay:5.4s}.ray:nth-child(8){transform:rotate(60deg);animation-delay:6.3s}
-    @keyframes rayPulse{0%,100%{opacity:0}50%{opacity:1}}
+    .ray{position:absolute;bottom:0;left:50%;width:1.5px;height:55vh;background:linear-gradient(to top,transparent,var(--ray-color),transparent);transform-origin:bottom center;animation:rayPulse 22s ease-in-out infinite;}
+    .ray:nth-child(1){transform:rotate(-55deg);animation-delay:0s}.ray:nth-child(2){transform:rotate(-38deg);animation-delay:2.2s}
+    .ray:nth-child(3){transform:rotate(-21deg);animation-delay:4.4s}.ray:nth-child(4){transform:rotate(-4deg);animation-delay:6.6s}
+    .ray:nth-child(5){transform:rotate(13deg);animation-delay:8.8s}.ray:nth-child(6){transform:rotate(30deg);animation-delay:11s}
+    .ray:nth-child(7){transform:rotate(47deg);animation-delay:13.2s}.ray:nth-child(8){transform:rotate(60deg);animation-delay:15.4s}
+    @keyframes rayPulse{0%,100%{opacity:0}50%{opacity:.7}}
 
     /* ══ LAYOUT ══ */
     .screen{position:relative;width:100%;height:100%;display:flex;flex-direction:column;z-index:10;overflow:hidden;}
@@ -238,6 +238,7 @@
 
   <!-- HEADER -->
   <div class="header">
+    <!-- شعار وزارة التعليم (يسار) -->
     <div class="logo-wrap">
       <div class="logo-ring">
         {% if settings and settings.ministry_logo %}
@@ -247,14 +248,16 @@
       <div class="logo-label">وزارة التعليم</div>
     </div>
 
+    <!-- وسط -->
     <div class="header-center">
       <div class="event-pill">✦ حفل تخرج ✦</div>
       <div class="header-title">{% if settings %}{{ settings.school_name }}{% else %}الثانوية الثالثة عشرة بعرعر{% endif %}</div>
       <div class="header-sub">{% if settings %}{{ settings.batch }}{% else %}دفعة الفخر والعطاء · ١٤٤٧ هـ{% endif %}</div>
     </div>
 
+    <!-- يمين: شعار المدرسة + معلومات -->
     <div class="h-right">
-      <div class="logo-wrap" style="align-items:flex-end">
+      <div class="logo-wrap">
         <div class="logo-ring">
           {% if settings and settings.school_logo %}
             <img src="{{ settings.school_logo.url }}" alt="شعار المدرسة">
@@ -262,7 +265,7 @@
         </div>
         <div class="logo-label">شعار المدرسة</div>
       </div>
-      <div class="counter-badge">
+      <div class="counter-badge" style="margin-top:.3em">
         <span class="counter-num">{{ messages|length }}</span>
         <span class="counter-lbl">رسالة</span>
       </div>
@@ -322,20 +325,70 @@ const MESSAGES=[{% for m in messages %}{"studentName":"{{ m.student_name|escapej
 </script>
 
 <script>
-/* ══ STARS ══ */
+/* ══ STARS + DUST ══ */
 const sc=document.getElementById('stars-canvas'),sx=sc.getContext('2d');
 const cc2=document.getElementById('confetti-canvas'),cx2=cc2.getContext('2d');
 function resizeC(){sc.width=cc2.width=window.innerWidth;sc.height=cc2.height=window.innerHeight;}
 resizeC();window.addEventListener('resize',resizeC);
-const stars=Array.from({length:220},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.6+.3,phase:Math.random()*Math.PI*2,speed:Math.random()*.8+.3}));
-function animStars(t){sx.clearRect(0,0,sc.width,sc.height);stars.forEach(s=>{const a=.1+.7*(.5+.5*Math.sin(t*.001*s.speed+s.phase));sx.beginPath();sx.arc(s.x*sc.width,s.y*sc.height,s.r,0,Math.PI*2);sx.fillStyle=`rgba(255,255,255,${a.toFixed(2)})`;sx.fill();});requestAnimationFrame(animStars);}
+
+// نجوم خافتة
+const stars=Array.from({length:180},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.2+.2,phase:Math.random()*Math.PI*2,speed:Math.random()*.4+.15}));
+
+// جسيمات غبار صغيرة جداً
+const dust=Array.from({length:90},()=>({
+  x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight,
+  r:Math.random()*.9+.2,
+  vx:(Math.random()-.5)*.18, vy:-Math.random()*.12-.04,
+  phase:Math.random()*Math.PI*2
+}));
+
+function animStars(t){
+  sx.clearRect(0,0,sc.width,sc.height);
+  // نجوم
+  stars.forEach(s=>{
+    const a=.05+.32*(.5+.5*Math.sin(t*.0007*s.speed+s.phase));
+    sx.beginPath();sx.arc(s.x*sc.width,s.y*sc.height,s.r,0,Math.PI*2);
+    sx.fillStyle=`rgba(255,255,255,${a.toFixed(2)})`;sx.fill();
+  });
+  // غبار
+  dust.forEach(d=>{
+    d.x+=d.vx; d.y+=d.vy;
+    if(d.x<0)d.x=sc.width; if(d.x>sc.width)d.x=0;
+    if(d.y<0){d.y=sc.height;d.x=Math.random()*sc.width;}
+    const a=.04+.18*(.5+.5*Math.sin(t*.0005+d.phase));
+    sx.beginPath();sx.arc(d.x,d.y,d.r,0,Math.PI*2);
+    sx.fillStyle=`rgba(201,162,39,${a.toFixed(2)})`;sx.fill();
+  });
+  requestAnimationFrame(animStars);
+}
 requestAnimationFrame(animStars);
 
-/* ══ CONFETTI ══ */
+/* ══ CONFETTI بطيء جداً ══ */
 let confetti=[];
 const confC=['#c9a227','#f0d060','#a855f7','#f472b6','#fff','#7c3aed','#60d5fa'];
-function spawnConf(n=80){for(let i=0;i<n;i++)confetti.push({x:Math.random()*cc2.width,y:-20-Math.random()*150,vx:(Math.random()-.5)*7,vy:Math.random()*4+1.5,color:confC[~~(Math.random()*confC.length)],w:Math.random()*12+3,h:Math.random()*6+2,rot:Math.random()*360,rs:(Math.random()-.5)*8,life:1});}
-function animConf(){cx2.clearRect(0,0,cc2.width,cc2.height);confetti=confetti.filter(p=>p.life>.01);confetti.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.06;p.rot+=p.rs;p.life-=.007;cx2.save();cx2.globalAlpha=Math.max(0,p.life);cx2.translate(p.x,p.y);cx2.rotate(p.rot*Math.PI/180);cx2.fillStyle=p.color;cx2.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx2.restore();});requestAnimationFrame(animConf);}
+function spawnConf(n=30){
+  for(let i=0;i<n;i++) confetti.push({
+    x:Math.random()*cc2.width, y:-10-Math.random()*80,
+    vx:(Math.random()-.5)*1.2,
+    vy:Math.random()*.5+.15,
+    color:confC[~~(Math.random()*confC.length)],
+    w:Math.random()*9+2, h:Math.random()*5+1.5,
+    rot:Math.random()*360, rs:(Math.random()-.5)*1.2,
+    life:1
+  });
+}
+function animConf(){
+  cx2.clearRect(0,0,cc2.width,cc2.height);
+  confetti=confetti.filter(p=>p.life>.01);
+  confetti.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=.008; p.rot+=p.rs; p.life-=.003;
+    cx2.save();cx2.globalAlpha=Math.max(0,p.life);
+    cx2.translate(p.x,p.y);cx2.rotate(p.rot*Math.PI/180);
+    cx2.fillStyle=p.color;cx2.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    cx2.restore();
+  });
+  requestAnimationFrame(animConf);
+}
 animConf();
 
 /* ══ DATETIME ══ */

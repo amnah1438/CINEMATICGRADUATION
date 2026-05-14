@@ -88,9 +88,8 @@
     /* LOGO UPLOAD */
     .logo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
     @media(max-width:500px){.logo-grid{grid-template-columns:1fr;}}
-    .logo-upload-box{border:2px dashed rgba(201,162,39,.25);border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:all .25s;position:relative;}
+    .logo-upload-box{display:block;border:2px dashed rgba(201,162,39,.25);border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:all .25s;}
     .logo-upload-box:hover{border-color:rgba(201,162,39,.5);background:rgba(201,162,39,.04);}
-    .logo-upload-box input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0;border:none;background:none;}
     .logo-preview-img{width:80px;height:80px;border-radius:50%;object-fit:contain;margin:0 auto 10px;display:block;border:2px solid var(--border);}
     .logo-placeholder{width:80px;height:80px;border-radius:50%;background:rgba(201,162,39,.08);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 10px;}
     .logo-upload-label{font-size:14px;font-weight:600;color:#fff;margin-bottom:4px;}
@@ -199,10 +198,10 @@
 
     <div class="section">
       <div class="section-title">🖼️ الشعارات</div>
-      <div class="section-sub">يُفضّل PNG بخلفية شفافة — تُرفع مباشرة على الشاشة</div>
+      <div class="section-sub">يُفضّل PNG بخلفية شفافة — اضغطي على المربع لاختيار الصورة</div>
       <div class="logo-grid">
-        <div class="logo-upload-box" onclick="document.getElementById('inp-ministry').click()">
-          <input type="file" id="inp-ministry" accept="image/*" onchange="uploadLogo(this,'ministry_logo','prev-ministry','status-ministry')">
+        <label class="logo-upload-box" for="inp-ministry">
+          <input type="file" id="inp-ministry" accept="image/*" style="display:none" onchange="uploadLogo(this,'ministry_logo','prev-ministry','status-ministry')">
           <div id="prev-ministry">
             {% if settings and settings.ministry_logo %}
               <img class="logo-preview-img" src="{{ settings.ministry_logo.url }}">
@@ -211,11 +210,11 @@
             {% endif %}
           </div>
           <div class="logo-upload-label">شعار وزارة التعليم</div>
-          <div class="logo-upload-hint">اضغطي لاختيار الصورة</div>
+          <div class="logo-upload-hint">اضغطي هنا لاختيار الصورة</div>
           <div class="upload-status" id="status-ministry"></div>
-        </div>
-        <div class="logo-upload-box" onclick="document.getElementById('inp-school').click()">
-          <input type="file" id="inp-school" accept="image/*" onchange="uploadLogo(this,'school_logo','prev-school','status-school')">
+        </label>
+        <label class="logo-upload-box" for="inp-school">
+          <input type="file" id="inp-school" accept="image/*" style="display:none" onchange="uploadLogo(this,'school_logo','prev-school','status-school')">
           <div id="prev-school">
             {% if settings and settings.school_logo %}
               <img class="logo-preview-img" src="{{ settings.school_logo.url }}">
@@ -224,17 +223,17 @@
             {% endif %}
           </div>
           <div class="logo-upload-label">شعار المدرسة</div>
-          <div class="logo-upload-hint">اضغطي لاختيار الصورة</div>
+          <div class="logo-upload-hint">اضغطي هنا لاختيار الصورة</div>
           <div class="upload-status" id="status-school"></div>
-        </div>
+        </label>
       </div>
     </div>
 
     <div class="section">
       <div class="section-title">👩‍🎓 صورة الخريجة الافتراضية</div>
-      <div class="section-sub">تظهر على البطاقات التي لا تحتوي صورة خاصة</div>
-      <div class="logo-upload-box grad-photo-box" onclick="document.getElementById('inp-grad').click()">
-        <input type="file" id="inp-grad" accept="image/*" onchange="uploadLogo(this,'default_grad_photo','prev-grad','status-grad')">
+      <div class="section-sub">تظهر على البطاقات — اضغطي لرفع صورة من جهازك</div>
+      <label class="logo-upload-box grad-photo-box" for="inp-grad">
+        <input type="file" id="inp-grad" accept="image/*" style="display:none" onchange="uploadLogo(this,'default_grad_photo','prev-grad','status-grad')">
         <div id="prev-grad">
           {% if settings and settings.default_grad_photo %}
             <img class="grad-photo-preview" src="{{ settings.default_grad_photo.url }}">
@@ -243,9 +242,9 @@
           {% endif %}
         </div>
         <div class="logo-upload-label">صورة الخريجة الافتراضية</div>
-        <div class="logo-upload-hint">اضغطي لاختيار صورة</div>
+        <div class="logo-upload-hint">اضغطي هنا لاختيار صورة من جهازك</div>
         <div class="upload-status" id="status-grad"></div>
-      </div>
+      </label>
     </div>
     <div class="preview-bar">
       <p>فتح شاشة العرض الرئيسية</p>
