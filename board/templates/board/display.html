@@ -209,12 +209,9 @@
     /* ══ PROGRESS ══ */
     .timer-bar-wrap{width:80%;height:2px;background:var(--msg-border);border-radius:2px;overflow:hidden;margin:0 auto .3em;flex-shrink:0;}
     .timer-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--primary),var(--primary-lt));border-radius:2px;transition:width linear;}
-    .progress-wrap{width:100%;display:flex;justify-content:center;align-items:center;gap:.8em;padding:.3em 0 .5em;flex-shrink:0;}
-    .dot{width:.42rem;height:.42rem;border-radius:50%;background:var(--dot-off);transition:all .5s cubic-bezier(.4,0,.2,1);flex-shrink:0;}
+    .progress-wrap{width:100%;display:flex;justify-content:center;gap:.5em;padding:.3em 0 .5em;flex-shrink:0;}
+    .dot{width:.42rem;height:.42rem;border-radius:50%;background:var(--dot-off);transition:all .5s cubic-bezier(.4,0,.2,1);}
     .dot.active{background:var(--primary);box-shadow:0 0 7px var(--photo-glow);width:1.5rem;border-radius:2px;}
-    .card-counter{font-size:.8em;font-weight:800;color:var(--primary);letter-spacing:2px;padding:.25em 1.2em;background:var(--badge-bg);border:1px solid var(--badge-brd);border-radius:50px;}
-    .pause-btn{background:var(--badge-bg);border:1px solid var(--badge-brd);border-radius:50%;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1em;transition:all .3s;flex-shrink:0;color:var(--primary);}
-    .pause-btn:hover{background:var(--primary);color:#fff;box-shadow:0 0 12px var(--photo-glow);}
 
     /* ══ BOTTOM ══ */
     .bottom-bar{width:100%;padding:.5vh 2.5vw;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-top:1px solid var(--bottom-brd);background:var(--bottom-bg);gap:1vw;}
@@ -284,9 +281,7 @@
 
   <!-- PROGRESS -->
   <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
-  <div class="progress-wrap" id="dots">
-    <button class="pause-btn" id="pause-btn" title="إيقاف/تشغيل">⏸</button>
-  </div>
+  <div class="progress-wrap" id="dots"></div>
 
   <!-- BOTTOM -->
   <div class="bottom-bar">
@@ -410,38 +405,11 @@ const QUOTES=['النجاح بداية رحلة، لا نهايتها','من ج�
 const COLORS=['#7c3aed','#0e7490','#be185d','#b45309','#065f46','#4338ca','#9d174d','#0f766e'];
 const DEMO=[{studentName:'فاطمة الأحمدي',parentName:'والدتها',message:'يا نور عيوني، في كل خطوة خطوتيها رأيت فيكِ شمساً لا تغيب. اليوم وأنتِ تلبسين ثوب النجاح أدعو الله أن يتمّم عليكِ نعمه.'},{studentName:'نورة العمري',parentName:'والدها',message:'ابنتي الغالية، زرعتِ بعرقكِ وصبركِ وها أنتِ تحصدين. لا حدّ لطموحكِ ولا سقف لأحلامكِ.'},{studentName:'ريم السهلي',parentName:'أسرة السهلي',message:'ما أجمل هذا اليوم وأنتِ ترتدين التاج الذي صنعتِه بأناملكِ الرقيقة. أنتِ فخرنا وكل أمانينا.'}];
 
-const MAX_DOTS=20;
 const stage=document.getElementById('stage'),dotsWrap=document.getElementById('dots');
-let cardEls=[],graduates=[],current=0,mainTimer=null,isPaused=false;
-
-const pauseBtn=document.getElementById('pause-btn');
-pauseBtn.addEventListener('click',()=>{
-  isPaused=!isPaused;
-  if(isPaused){
-    clearInterval(mainTimer);mainTimer=null;
-    pauseBtn.textContent='▶';
-    pauseBtn.title='تشغيل';
-    document.getElementById('timer-bar').style.animationPlayState='paused';
-    document.getElementById('timer-bar').style.transition='none';
-  } else {
-    pauseBtn.textContent='⏸';
-    pauseBtn.title='إيقاف';
-    mainTimer=setInterval(nextCard,SETTINGS.cardSpeed);
-    startBar();
-  }
-});
+let cardEls=[],graduates=[],current=0,mainTimer=null;
 
 function posFor(i,cur,n){const o=((i-cur)%n+n)%n;if(o===0)return'0';if(o===1)return'1';if(o===n-1)return'-1';if(o===2)return'2';if(o===n-2)return'-2';return'far';}
-function updatePositions(){
-  const n=graduates.length;
-  cardEls.forEach((c,i)=>{c.dataset.pos=posFor(i,current,n);});
-  if(n<=MAX_DOTS){
-    for(let i=0;i<n;i++){const d=document.getElementById('dot'+i);if(d)d.classList.toggle('active',i===current);}
-  } else {
-    const ctr=document.getElementById('card-counter');
-    if(ctr)ctr.textContent=(current+1)+' / '+n;
-  }
-}
+function updatePositions(){const n=graduates.length;cardEls.forEach((c,i)=>{c.dataset.pos=posFor(i,current,n);const d=document.getElementById('dot'+i);if(d)d.classList.toggle('active',i===current);});}
 
 function photoHTML(g){
   if(g.photo) return `<img src="${g.photo}" alt="${g.name}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">`;
@@ -480,16 +448,8 @@ function buildCards(){
       <div class="sig"><div class="sig-line"></div><div class="sig-name">${g.parent}</div><div class="sig-line"></div></div>
       <div class="quote-row"><div class="quote-text">"${g.quote}"</div></div>`;
     stage.appendChild(card);cardEls.push(card);
-    if(graduates.length<=MAX_DOTS){
-      const dot=document.createElement('div');dot.className='dot';dot.id='dot'+i;dotsWrap.insertBefore(dot,pauseBtn);
-    }
+    const dot=document.createElement('div');dot.className='dot';dot.id='dot'+i;dotsWrap.appendChild(dot);
   });
-  if(graduates.length>MAX_DOTS){
-    const ctr=document.createElement('div');
-    ctr.id='card-counter';ctr.className='card-counter';
-    ctr.textContent='1 / '+graduates.length;
-    dotsWrap.insertBefore(ctr,pauseBtn);
-  }
 }
 
 function startBar(){const b=document.getElementById('timer-bar');b.style.transition='none';b.style.width='0%';requestAnimationFrame(()=>requestAnimationFrame(()=>{b.style.transition=`width ${SETTINGS.cardSpeed}ms linear`;b.style.width='100%';}));}
