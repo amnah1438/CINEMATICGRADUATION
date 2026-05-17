@@ -97,11 +97,20 @@
     .header-title{font-size:clamp(1.1rem,2.2vw,2.4rem);font-weight:800;color:var(--text);line-height:1.2;}
     .header-sub{font-size:clamp(.65rem,1.1vw,1rem);color:var(--primary);letter-spacing:1px;margin-top:.2em;}
 
-    .h-right{display:flex;flex-direction:column;align-items:flex-start;gap:.3em;flex-shrink:0;}
-    .datetime{font-size:.65em;color:var(--muted);line-height:1.8;text-align:right;}
+    .h-right{display:flex;flex-direction:column;align-items:center;gap:.3em;flex-shrink:0;}
+    .datetime{font-size:.62em;color:var(--muted);line-height:1.6;text-align:center;}
     .counter-badge{display:inline-flex;align-items:center;gap:.4em;background:var(--msg-bg);border:1px solid var(--card-border);border-radius:50px;padding:.22em .8em;}
     .counter-num{font-size:.85em;font-weight:800;color:var(--primary);}
     .counter-lbl{font-size:.6em;color:var(--muted);}
+
+    /* ── PAUSE INDICATOR ── */
+    .pause-hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.6);border:1.5px solid var(--card-border);border-radius:50%;width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;z-index:500;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .pause-hint.show{opacity:1;}
+    body.paused .pause-hint{opacity:1;}
+
+    /* إخفاء النقاط عند كثرة الرسائل */
+    .card-counter{font-size:.7em;color:var(--muted);text-align:center;padding:.2em 0 .4em;flex-shrink:0;display:none;}
+    .card-counter.visible{display:block;}
 
     /* ── TICKER ── */
     .ticker{width:100%;overflow:hidden;flex-shrink:0;background:linear-gradient(90deg,transparent,var(--ticker-bg),transparent);border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border);padding:.4em 0;}
@@ -215,7 +224,13 @@
 
     /* ══ BOTTOM ══ */
     .bottom-bar{width:100%;padding:.5vh 2.5vw;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-top:1px solid var(--bottom-brd);background:var(--bottom-bg);gap:1vw;}
-    .credit{font-size:.65em;color:var(--muted);letter-spacing:1px;text-align:center;}
+    .credit-name{font-size:.68em;color:var(--primary);font-weight:700;letter-spacing:1px;white-space:nowrap;}
+    .credit{font-size:.62em;color:var(--muted);letter-spacing:1px;text-align:center;}
+    .bottom-info{display:flex;align-items:center;gap:1em;flex-shrink:0;}
+    .bottom-time{font-size:.62em;color:var(--muted);text-align:left;line-height:1.5;}
+    .bottom-counter{display:inline-flex;align-items:center;gap:.3em;background:var(--msg-bg);border:1px solid var(--card-border);border-radius:50px;padding:.18em .7em;}
+    .bottom-counter .counter-num{font-size:.82em;font-weight:800;color:var(--primary);}
+    .bottom-counter .counter-lbl{font-size:.58em;color:var(--muted);}
 
     /* ══ FAB ══ */
     .fab{position:fixed;bottom:1.5vh;left:50%;transform:translateX(-50%);background:var(--fab-bg);border:none;border-radius:60px;padding:.6em 2.5em;font-family:inherit;font-size:clamp(.85rem,1.4vw,1.2rem);font-weight:800;color:#fff;cursor:pointer;z-index:200;box-shadow:0 5px 25px var(--fab-shadow);animation:fabPulse 2.8s ease-in-out infinite;text-decoration:none;display:flex;align-items:center;gap:.4em;white-space:nowrap;}
@@ -255,21 +270,14 @@
       <div class="header-sub">{% if settings %}{{ settings.batch }}{% else %}دفعة الفخر والعطاء · ١٤٤٧ هـ{% endif %}</div>
     </div>
 
-    <!-- يمين: شعار المدرسة + معلومات -->
-    <div class="h-right">
-      <div class="logo-wrap">
-        <div class="logo-ring">
-          {% if settings and settings.school_logo %}
-            <img src="{{ settings.school_logo.url }}" alt="شعار المدرسة">
-          {% else %}<span class="logo-default">🎓</span>{% endif %}
-        </div>
-        <div class="logo-label">شعار المدرسة</div>
+    <!-- يمين: شعار المدرسة فقط -->
+    <div class="logo-wrap">
+      <div class="logo-ring">
+        {% if settings and settings.school_logo %}
+          <img src="{{ settings.school_logo.url }}" alt="شعار المدرسة">
+        {% else %}<span class="logo-default">🎓</span>{% endif %}
       </div>
-      <div class="counter-badge" style="margin-top:.3em">
-        <span class="counter-num">{{ messages|length }}</span>
-        <span class="counter-lbl">رسالة</span>
-      </div>
-      <div class="datetime" id="datetime"></div>
+      <div class="logo-label">شعار المدرسة</div>
     </div>
   </div>
 
@@ -282,13 +290,23 @@
   <!-- PROGRESS -->
   <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
   <div class="progress-wrap" id="dots"></div>
+  <div class="card-counter" id="card-counter"></div>
 
   <!-- BOTTOM -->
   <div class="bottom-bar">
-    <div style="font-size:.65em;color:var(--muted);">cinematicgraduation.onrender.com</div>
-    <div class="credit">✦ تصميم رائدة النشاط: آمنة العنزي ✦</div>
-    <div style="font-size:.65em;color:var(--muted);">١٤٤٧هـ</div>
+    <div class="credit-name">✦ رائدة النشاط: آمنة العنزي</div>
+    <div class="credit">حفل تخرج الطالبات · ١٤٤٧هـ</div>
+    <div class="bottom-info">
+      <div class="bottom-counter">
+        <span class="counter-num">{{ messages|length }}</span>
+        <span class="counter-lbl">رسالة</span>
+      </div>
+      <div class="bottom-time" id="datetime"></div>
+    </div>
   </div>
+
+  <!-- مؤشر الإيقاف -->
+  <div class="pause-hint" id="pause-hint">⏸</div>
 
 </div>
 
@@ -452,13 +470,66 @@ function buildCards(){
   });
 }
 
-function startBar(){const b=document.getElementById('timer-bar');b.style.transition='none';b.style.width='0%';requestAnimationFrame(()=>requestAnimationFrame(()=>{b.style.transition=`width ${SETTINGS.cardSpeed}ms linear`;b.style.width='100%';}));}
-function showCard(idx){current=idx;updatePositions();setTimeout(()=>spawnConf(60),300);startBar();}
-function nextCard(){current=(current+1)%graduates.length;showCard(current);}
-function startShow(){if(mainTimer)clearInterval(mainTimer);current=0;buildCards();showCard(0);mainTimer=setInterval(nextCard,SETTINGS.cardSpeed);}
+let isPaused = false;
+const pauseHint = document.getElementById('pause-hint');
+
+function startBar(){
+  const b=document.getElementById('timer-bar');
+  b.style.transition='none';b.style.width='0%';
+  if(!isPaused) requestAnimationFrame(()=>requestAnimationFrame(()=>{b.style.transition=`width ${SETTINGS.cardSpeed}ms linear`;b.style.width='100%';}));
+}
+function showCard(idx){current=idx;updatePositions();setTimeout(()=>spawnConf(30),300);startBar();}
+function nextCard(){if(isPaused)return;current=(current+1)%graduates.length;showCard(current);}
+function startShow(){
+  if(mainTimer)clearInterval(mainTimer);
+  current=0;buildCards();
+
+  // النقاط: أخفيها إذا أكثر من ٢٥ واستبدلها بعداد
+  const dotsEl=document.getElementById('dots');
+  const counterEl=document.getElementById('card-counter');
+  if(graduates.length>25){
+    dotsEl.style.display='none';
+    counterEl.classList.add('visible');
+  }
+
+  showCard(0);
+  mainTimer=setInterval(nextCard,SETTINGS.cardSpeed);
+
+  // تحديث العداد
+  if(graduates.length>25){
+    const orig=updatePositions;
+    updatePositions=function(){
+      orig();
+      counterEl.textContent=`${current+1} / ${graduates.length}`;
+    };
+    updatePositions();
+  }
+}
+
+/* ══ إيقاف / تشغيل بالضغط ══ */
+function togglePause(){
+  isPaused=!isPaused;
+  pauseHint.textContent=isPaused?'⏸':'▶';
+  pauseHint.classList.add('show');
+  setTimeout(()=>pauseHint.classList.remove('show'),1500);
+  if(!isPaused){
+    // استأنف
+    showCard(current);
+    if(mainTimer)clearInterval(mainTimer);
+    mainTimer=setInterval(nextCard,SETTINGS.cardSpeed);
+  } else {
+    clearInterval(mainTimer);
+    const b=document.getElementById('timer-bar');
+    b.style.transition='none';
+  }
+}
+document.getElementById('stage').addEventListener('click',togglePause);
+document.getElementById('stage').addEventListener('touchend',function(e){e.preventDefault();togglePause();},{passive:false});
 
 startShow();
-setTimeout(()=>location.reload(),90000);
+// إعادة تحميل بعد دورة كاملة على كل الرسائل + هامش ٣٠ ثانية
+const _reloadAfter = Math.max(180000, graduates.length * SETTINGS.cardSpeed + 30000);
+setTimeout(()=>location.reload(), _reloadAfter);
 </script>
 </body>
 </html>
